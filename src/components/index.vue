@@ -62,10 +62,17 @@ export default {
                 .then(response => {
                     if(response.data.isValidate === 'true')
                     {
-                        alert("success")
+                        window.sessionStorage.setItem('username', this.login.username) //存储用户名
+                        this.$router.push({
+                            path: '/document-manage'
+                        })
                     } else
                     {
-                        alert("fail")
+                        this.$message({
+                            message: '用户名或密码错误',
+                            type: 'error',
+                            duration: 2000
+                        })
                     }
                 });
         },
