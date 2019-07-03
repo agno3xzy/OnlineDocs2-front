@@ -37,7 +37,7 @@ export default {
             url:'/invite/checkDocId',
             method:"post",
             data:{
-                docId: this.$route.params.docId
+                docID: this.$route.params.docId
             },
             transformRequest: [function (data) {
             // Do whatever you want to transform the data
@@ -59,7 +59,7 @@ export default {
             })
         })
         .then(response => {
-            if(response.data.message === 'true')
+            if(response.data.message === 'success')
             {
                 this.$message({
                     message: "请登陆以接受邀请",
@@ -82,7 +82,10 @@ export default {
                 url:'/invite/checkUser',
                 method:"post",
                 data:{
-                    docId: this.$route.params.docId
+                    username: this.login.username,
+                    password: this.login.password,
+                    docID: this.$route.params.docId,
+                    auth: this.$route.params.auth
                 },
                 transformRequest: [function (data) {
                 // Do whatever you want to transform the data
@@ -109,6 +112,21 @@ export default {
                     this.$message({
                         message: '用户名或密码错误',
                         type: 'error',
+                        duration: 2000
+                    })
+                }
+                if(response.data.message === 'docError')
+                {
+                    this.$message({
+                        message: '没有该文档的共享信息',
+                        type: 'error',
+                        duration: 2000
+                    })
+                }
+                if(response.data.message === 'authError')
+                {
+                    this.$message({
+                        message: '你已经拥有该文档的权限',
                         duration: 2000
                     })
                 }

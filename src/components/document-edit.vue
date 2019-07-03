@@ -3,7 +3,8 @@
     <navmenu></navmenu>
     <div id="editor">
         <quill-editor
-            :content="content"
+            v-model="content"
+            ref="myQuillEditor"
             :options="editorOption"
             @change="onEditorChange($event)">
         </quill-editor>
@@ -45,6 +46,9 @@ export default {
             this.content = html
         },
         timeUpdate() {
+            var pos = this.$refs.myQuillEditor.quill.selection.savedRange.index
+            this.$refs.myQuillEditor.quill.setSelection(pos)
+            console.log(pos)
             new_content = this.content
             var dmp = new diff_match_patch()
             var diff = dmp.diff_main(content.replace('<br>',''),new_content.replace('<br>',''))

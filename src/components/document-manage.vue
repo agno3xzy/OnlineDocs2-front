@@ -119,6 +119,7 @@
 <script>
 import navmenu from './nav-menu'
 export default {
+    inject: ['reload'],
     name: 'document-manage',
     data() {
         return {
@@ -169,6 +170,11 @@ export default {
         },
         uploadFile() {
             console.log(this.fileList)
+            this.$message({
+                message:'111',
+                type:'success'
+            })
+            this.reload()
             let formData = new FormData()
             formData.append('username',window.sessionStorage.username)
             formData.append('file', this.fileList[0])
@@ -226,6 +232,6 @@ a:hover {
 }
 .el-table {
     top: 100px;
-    left: 400px;
+    left: 20%;
 }
 </style>

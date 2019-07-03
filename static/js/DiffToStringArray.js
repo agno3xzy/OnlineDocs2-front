@@ -43,9 +43,6 @@ function replaceAll(str1,str2)
     return str1;
 }
 
-var content;
-var new_content;
-
 function loadContent() {
     content = document.getElementById("existFileContent").innerHTML;
     quill.setText(content);
@@ -53,7 +50,7 @@ function loadContent() {
     content = document.getElementById('editor-container').children[0].innerHTML;
 }
 
-function update() {
+function update(content, new_content) {
     // 获取光标位置
     var pos=quill.getSelection().index;
     //console.log("pos "+pos);
