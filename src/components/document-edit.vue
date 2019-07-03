@@ -66,9 +66,35 @@ export default {
     mounted() {
         //与后端通讯 获取文件内容
         //axios
-        content = this.content
-        pos = 0
-        this.timer = setInterval(this.timeUpdate,5000)
+        this.$axios(
+        {
+            url:'/edit',
+            method:"post",
+            data:{
+                oldPath: this.$route.query.oldPath,
+                newPath: this.$route.query.newPath
+            },
+            transformRequest: [function (data) {
+            // Do whatever you want to transform the data
+            let ret = ''
+            for (let it in data) {
+            // 如果要发送中文 编码 
+                ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+            }
+            return ret
+            }],
+            headers: {
+                'Content-Type':'application/x-www-form-urlencoded'
+            }
+        }).catch(error => {
+            console.log(error.message);
+        })
+        .then(response => {
+            this.content = response.data.content
+            content = this.content
+            pos = 0
+            this.timer = setInterval(this.timeUpdate,5000)
+        });
     },
     beforeDestroy() {
         clearInterval(this.timer)

@@ -7,18 +7,18 @@
             <a href="javascript:void(0)" v-on:click="changeCategory" v-bind:class="{active:category.create}" id="create">我创建的</a>
             <a href="javascript:void(0)" v-on:click="changeCategory" v-bind:class="{active:category.invite}" id="invite">共享给我的</a>
         </div>
-        <div id="lastuse-table" v-if="category.lastuse">
+        <div id="lastuse-table" v-show="category.lastuse">
             <el-table 
             :header-cell-style="{background:'#F7F7F7'}"
             :cell-style="{background:'#F7F7F7'}"
             :data="lastUseTableData"
-            style="width: 800px;"
+            style="width: 900px;"
             max-height="500">
                 <el-table-column prop="docName" label="文档名" width="150" align="center"></el-table-column>
                 <el-table-column prop="owner" label="文档所有者" width="150" align="center"></el-table-column>
                 <el-table-column prop="lastUseTime" label="最近修改时间" width="150" align="center"></el-table-column>
                 <el-table-column prop="auth" label="权限" width="150" align="center"></el-table-column>
-                <el-table-column label="操作" width="200" align="center">
+                <el-table-column label="操作" width="300" align="center">
                     <template slot-scope="scope">
                         <el-button
                         size="mini"
@@ -26,39 +26,38 @@
                         <el-button
                         size="mini"
                         @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                        <el-button
+                        type="primary"
+                        size="mini"
+                        @click="handleDownload(scope.$index, scope.row)">下载</el-button>
                     </template>
                 </el-table-column>
             </el-table>
         </div>
-        <div id="create-table" v-if="category.create">
+        <div id="create-table" v-show="category.create">
             <el-table 
             :header-cell-style="{background:'#F7F7F7'}"
             :cell-style="{background:'#F7F7F7'}"
             :data="createTableData"
-            style="width: 800px;"
+            style="width: 1050px;"
             max-height="500">
                 <el-table-column prop="docName" label="文档名" width="150" align="center"></el-table-column>
                 <el-table-column prop="lastUseTime" label="最近修改时间" width="150" align="center"></el-table-column>
                 <el-table-column prop="shareAmount" label="共享人数" width="150" align="center"></el-table-column>
-                <el-table-column label="共享成员" width="150">
-                    <template>
-                        <el-popover
-                        ref="popover"
-                        placement="bottom"
-                        width="150px"
-                        trigger="hover">
-                        <el-table :data="userData" max-height="200" size="mini" style="left:0;top:0;width:150px;">
-                            <el-table-column width="150" property="username" label="成员" align="center"></el-table-column>
-                        </el-table>
-                        </el-popover>
-                        <el-button v-popover:popover size="mini" >查看</el-button>
+                <el-table-column prop="userData" label="共享成员" width="300" align="center">
+                    <template slot-scope="scope">
+                        <el-tag v-for=" (item,index) in createTableData[scope.$index].userData" :type="generateType(index)" size="mini" style="margin-left:10px;margin-top:10px;">{{item.username}}</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="200" align="center">
+                <el-table-column label="操作" width="300" align="center">
                     <template slot-scope="scope">
                         <el-button
                         size="mini"
                         @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                        <el-button
+                        type="primary"
+                        size="mini"
+                        @click="handleDownload(scope.$index, scope.row)">下载</el-button>
                         <el-button
                         size="mini"
                         type="danger"
@@ -67,18 +66,18 @@
                 </el-table-column>
             </el-table>
         </div>
-        <div id="invite-table" v-if="category.invite">
+        <div id="invite-table" v-show="category.invite">
             <el-table 
             :header-cell-style="{background:'#F7F7F7'}"
             :cell-style="{background:'#F7F7F7'}"
             :data="inviteTableData"
-            style="width: 800px;"
+            style="width: 900px;"
             max-height="500">
                 <el-table-column prop="docName" label="文档名" width="150" align="center"></el-table-column>
                 <el-table-column prop="owner" label="文档所有者" width="150" align="center"></el-table-column>
                 <el-table-column prop="lastUseTime" label="最近修改时间" width="150" align="center"></el-table-column>
                 <el-table-column prop="auth" label="权限" width="150" align="center"></el-table-column>
-                <el-table-column label="操作" width="200" align="center">
+                <el-table-column label="操作" width="300" align="center">
                     <template slot-scope="scope">
                         <el-button
                         size="mini"
@@ -86,6 +85,10 @@
                         <el-button
                         size="mini"
                         @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                        <el-button
+                        type="primary"
+                        size="mini"
+                        @click="handleDownload(scope.$index, scope.row)">下载</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -126,10 +129,8 @@ export default {
         return {
             category: {lastuse:true, create: false, invite: false},
             lastUseTableData: [],
-            createTableData: [{docName:'111',lastUseTime:'2019-1-1',shareAmount:'10'},
-                            {docName:'111',lastUseTime:'2019-1-1',shareAmount:'2'}],
-            inviteTableData: [{docName:'111',owner:'aaa',lastUseTime:'2019-1-1',auth:'write'}],
-            userData: [{username:'aaa'},{username:'bbb'}],
+            createTableData: [{docName:'111',lastUseTime:'2019-1-1',shareAmount:10,userData:[{username:'aaaaaaa'},{username:'aaaaaaa'},{username:'aaaaaaa'},{username:'aaaaaaa'},{username:'aaaaaaa'},{username:'aaaaaaa'},{username:'aaaaaaa'},{username:'aaaaaaa'},{username:'aaaaaaa'},]}],
+            inviteTableData: [],
             uploadDialogVisible: false,
             fileList: []
         }
@@ -175,16 +176,151 @@ export default {
                 this.category[i] = false;
             }
             this.category[selectitem] = true
-            console.log(this.category)
+            if(selectitem === 'lastuse')
+            {
+                for(var i = this.lastUseTableData.length-1; i >= 0; i--)
+                {
+                    this.$delete(this.lastUseTableData,i)
+                }
+                this.$axios(
+                {
+                    url:'/document-manage/lastuse',
+                    method:"post",
+                    data:{
+                        username: window.sessionStorage.username,
+                    },
+                    transformRequest: [function (data) {
+                    // Do whatever you want to transform the data
+                    let ret = ''
+                    for (let it in data) {
+                    // 如果要发送中文 编码 
+                        ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+                    }
+                    return ret
+                    }],
+                    headers: {
+                        'Content-Type':'application/x-www-form-urlencoded'
+                    }
+                }).catch(error => {
+                    console.log(error.message);
+                })
+                .then(response => {
+                    docList.length = 0
+                    for(var i = 0; i < response.data.docList.length; i++)
+                    {
+                        var docItem = response.data.docList[i]
+                        docList.push(docItem)
+                        this.lastUseTableData.push({docName:docItem.docName,owner:docItem.owner,lastUseTime:docItem.lastUseTime,auth:docItem.auth})
+                    }
+                    return (response)
+                });
+            }
+            if(selectitem === 'create')
+            {
+                for(var i = this.createTableData.length-1; i >= 0; i--)
+                {
+                    this.$delete(this.createTableData,i)
+                }
+                this.$axios(
+                {
+                    url:'/document-manage/create',
+                    method:"post",
+                    data:{
+                        username: window.sessionStorage.username,
+                    },
+                    transformRequest: [function (data) {
+                    // Do whatever you want to transform the data
+                    let ret = ''
+                    for (let it in data) {
+                    // 如果要发送中文 编码 
+                        ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+                    }
+                    return ret
+                    }],
+                    headers: {
+                        'Content-Type':'application/x-www-form-urlencoded'
+                    }
+                }).catch(error => {
+                    console.log(error.message);
+                })
+                .then(response => {
+                    docList.length = 0
+                    for(var i = 0; i < response.data.docList.length; i++)
+                    {
+                        var docItem = response.data.docList[i]
+                        docList.push(docItem)
+                        var userData = []
+                        for(var j = 0; j < docItem.userList.length; j++)
+                        {
+                            userData.push({username:docItem.userList[j]})
+                        }
+                        this.createTableData.push({docName:docItem.docName,lastUseTime:docItem.lastUseTime,shareAmount:docItem.shareAmount,userData:userData})
+                    }
+                    return (response)
+                });
+            }
+            if(selectitem === 'invite')
+            {
+                for(var i = this.inviteTableData.length-1; i >= 0; i--)
+                {
+                    this.$delete(this.inviteTableData,i)
+                }
+                this.$axios(
+                {
+                    url:'/document-manage/share',
+                    method:"post",
+                    data:{
+                        username: window.sessionStorage.username,
+                    },
+                    transformRequest: [function (data) {
+                    // Do whatever you want to transform the data
+                    let ret = ''
+                    for (let it in data) {
+                    // 如果要发送中文 编码 
+                        ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+                    }
+                    return ret
+                    }],
+                    headers: {
+                        'Content-Type':'application/x-www-form-urlencoded'
+                    }
+                }).catch(error => {
+                    console.log(error.message);
+                })
+                .then(response => {
+                    docList.length = 0
+                    for(var i = 0; i < response.data.docList.length; i++)
+                    {
+                        var docItem = response.data.docList[i]
+                        docList.push(docItem)
+                        this.inviteTableData.push({docName:docItem.docName,owner:docItem.owner,lastUseTime:docItem.lastUseTime,auth:docItem.auth})
+                    }
+                    return (response)
+                });
+            }
         },
         handleExplore(index, row) {
             console.log(index, row)
+            console.log(docList)
         },
         handleEdit(index, row) {
             console.log(index, row)
+            console.log(docList)
+            this.$router.push({
+                path: '/document-edit',
+                query: {
+                    oldPath: docList[index].oldPath,
+                    newPath: docList[index].newPath
+                }
+            })
         },
         handleDelete(index, row) {
             console.log(index, row)
+            console.log(docList)
+        },
+        handleDownload(index, row) {
+            console.log(index, row)
+            console.log(docList)
         },
         handleExceed(files, fileList) {
             this.$message.warning(`最多上传 ${files.length} 个文件`)
@@ -212,6 +348,19 @@ export default {
             for(var i = this.fileList.length-1; i >= 0; i--)
             {
                 this.$delete(this.fileList, i);
+            }
+        },
+        generateType(index) {
+            if(index % 5 === 0) {
+                return ''
+            } else if(index % 5 === 1) {
+                return 'success'
+            } else if(index % 5 === 2) {
+                return 'info'
+            } else if(index % 5 === 3) {
+                return 'warning'
+            } else if(index % 5 === 4) {
+                return 'danger'
             }
         }
     }
