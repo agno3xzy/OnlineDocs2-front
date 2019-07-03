@@ -59,6 +59,7 @@ export default {
             var dmp = new diff_match_patch();
             var diff = dmp.diff_main(content.replace('<br>',''),new_content.replace('<br>',''));
             var opList = (update(diff))
+            console.log(opList)
             this.$axios(
             {
                 url:'/conflictHandle',

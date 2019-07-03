@@ -96,7 +96,7 @@ function update(diff) {
                             position = 0;
                             linecount += 1;
                         }
-                        result.push("ins," + linecount.toString() + "," + position.toString() + "," + diffstring.toString() + ",false.");
+                        result = result + "ins," + linecount.toString() + "," + position.toString() + "," + diffstring.toString() + ",false.";
                         //position += diffstring.length; //位置向后挪
                     }
                 } else //分行
@@ -108,7 +108,7 @@ function update(diff) {
                         textlist.splice(textlist.length-1,1);
                         for(var j = 0; j < textlist.length; j++)
                         {
-                            result.push("ins," + linecount.toString() + "," + position.toString() + "," + textlist[j].toString() + ",true.");
+                            result = result + "ins," + linecount.toString() + "," + position.toString() + "," + textlist[j].toString() + ",true.";
                         }
                     }
                     if(diffstring === "</p><p>") //在中间新起一行 两种情况 新起一行或者把原有一行的一部分换行
@@ -121,15 +121,15 @@ function update(diff) {
                         var nextdifftype = nextdifflist[0];
                         if(beforedifftype === 0 && beforediffstring.lastIndexOf("<p>") === beforediffstring.length - 3) //说明是新起一行
                         {
-                            result.push("ins," + linecount.toString() + "," + position.toString() + "," + "" + ",true.");
+                            result = result + "ins," + linecount.toString() + "," + position.toString() + "," + "" + ",true.";
                         } else
                         {
                             //console.log(nextdiffstring.indexOf("</p>"));
                             var alterstring = nextdiffstring.slice(0,nextdiffstring.indexOf("</p>"));
                             //console.log(alterstring);
-                            result.push("del," + linecount.toString() + "," + position.toString() + "," + alterstring.toString() + ",false.");
+                            result = result + "del," + linecount.toString() + "," + position.toString() + "," + alterstring.toString() + ",false.";
                             position = 0;
-                            result.push("ins," + linecount.toString() + "," + position.toString() + "," + alterstring.toString() + ",true.");
+                            result = result + "ins," + linecount.toString() + "," + position.toString() + "," + alterstring.toString() + ",true.";
 
                         }
                     }
@@ -173,7 +173,7 @@ function update(diff) {
             {
                 if(startcount === 0 && endcount === 0)
                 {
-                    result.push("del," + linecount.toString() + "," + position.toString() + "," + diffstring.toString() + ",false.");
+                    result = result + "del," + linecount.toString() + "," + position.toString() + "," + diffstring.toString() + ",false.";
                 }
                 else
                 {
@@ -182,7 +182,7 @@ function update(diff) {
                         if(startcount === 1 && endcount === 1) //只删除一行
                         {
                             linecount += 1;
-                            result.push("del," + linecount.toString() + "," + position.toString() + "," + "" + ",true.");
+                            result = result + "del," + linecount.toString() + "," + position.toString() + "," + "" + ",true.";
                         } else //删除多行
                         {
                             diffstring = replaceAll(diffstring,"<p>");
@@ -191,7 +191,7 @@ function update(diff) {
                             for(var j = 0; j < textlist.length; j++)
                             {
                                 linecount += 1;
-                                result.push("del," + linecount.toString() + "," + position.toString() + "," + textlist[j].toString() + ",true.");
+                                result = result + "del," + linecount.toString() + "," + position.toString() + "," + textlist[j].toString() + ",true.";
                             }
                         }
                     } else
@@ -208,8 +208,8 @@ function update(diff) {
                             if(diffstring === "</p><p>") //只把下一行切到本行
                             {
                                 linecount += 1;
-                                result.push("del," + linecount.toString() + "," + "0" + "," + nextdiffstring.slice(0,nextdiffstring.indexOf("</p>")) + ",true.");
-                                result.push("ins," + (linecount-1).toString() + "," + position.toString() + "," + nextdiffstring.slice(0,nextdiffstring.indexOf("</p>")) + ",false.");
+                                result = result + "del," + linecount.toString() + "," + "0" + "," + nextdiffstring.slice(0,nextdiffstring.indexOf("</p>")) + ",true.";
+                                result = result + "ins," + (linecount-1).toString() + "," + position.toString() + "," + nextdiffstring.slice(0,nextdiffstring.indexOf("</p>")) + ",false.";
                                 position = 0;
                             } else
                             {
@@ -217,10 +217,10 @@ function update(diff) {
                                 {
                                     for(var j = 0; j < textlist.length - 1; j++)
                                     {
-                                        result.push("del," + linecount.toString() + "," + position.toString() + "," + textlist[j].toString() + ",true.");
+                                        result = result + "del," + linecount.toString() + "," + position.toString() + "," + textlist[j].toString() + ",true.";
                                         linecount += 1;
                                     }
-                                    result.push("del," + linecount.toString() + "," + position.toString() + "," + textlist[textlist.length-1].toString() + ",false.");
+                                    result = result + "del," + linecount.toString() + "," + position.toString() + "," + textlist[textlist.length-1].toString() + ",false.";
                                 } else
                                 {
                                     var isFirstLineDel = true; //第一行是否完全删除
@@ -228,32 +228,32 @@ function update(diff) {
                                     var appendposition = position;
                                     if(beforediffstring.lastIndexOf("<p>") === beforediffstring.length - 3)
                                     {
-                                        result.push("del," + linecount.toString() + "," + position.toString() + "," + textlist[0].toString() + ",true.");
+                                        result = result + "del," + linecount.toString() + "," + position.toString() + "," + textlist[0].toString() + ",true.";
                                     } else
                                     {
-                                        result.push("del," + linecount.toString() + "," + position.toString() + "," + textlist[0].toString() + ",false.");
+                                        result = result + "del," + linecount.toString() + "," + position.toString() + "," + textlist[0].toString() + ",false.";
                                         position = 0;
                                         isFirstLineDel = false;
                                     }
                                     for(var j = 1; j < textlist.length - 1; j++)
                                     {
                                         linecount += 1;
-                                        result.push("del," + linecount.toString() + "," + position.toString() + "," + textlist[j].toString() + ",true.");
+                                        result = result + "del," + linecount.toString() + "," + position.toString() + "," + textlist[j].toString() + ",true.";
                                     }
                                     linecount += 1;
                                     if(nextdiffstring.indexOf("</p>") === 0)
                                     {
-                                        result.push("del," + linecount.toString() + "," + position.toString() + "," + textlist[textlist.length-1].toString() + ",true.");
+                                        result = result + "del," + linecount.toString() + "," + position.toString() + "," + textlist[textlist.length-1].toString() + ",true.";
                                     } else
                                     {
                                         if(isFirstLineDel)
                                         {
-                                            result.push("del," + linecount.toString() + "," + position.toString() + "," + textlist[textlist.length-1].toString() + ",false.");
+                                            result = result + "del," + linecount.toString() + "," + position.toString() + "," + textlist[textlist.length-1].toString() + ",false.";
                                         } else
                                         {
                                             var appendstring = nextdiffstring.slice(0,nextdiffstring.indexOf("</p>"));
-                                            result.push("del," + linecount.toString() + "," + position.toString() + "," + textlist[textlist.length-1].toString() + appendstring + ",true.");
-                                            result.push("ins," + firstdelline.toString() + "," + appendposition.toString() + "," + appendstring.toString() + ",false.");
+                                            result = result + "del," + linecount.toString() + "," + position.toString() + "," + textlist[textlist.length-1].toString() + appendstring + ",true.";
+                                            result = result + "ins," + firstdelline.toString() + "," + appendposition.toString() + "," + appendstring.toString() + ",false.";
                                         }
                                     }
                                 }
