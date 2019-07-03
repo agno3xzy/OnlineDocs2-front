@@ -6,6 +6,7 @@ import document_manage from '@/components/document-manage'
 import document_edit from '@/components/document-edit'
 import inviteConfirm from '@/components/invite-confirm'
 import notfound from '@/components/notfound'
+import history from '@/components/history'
 Vue.use(Router)
 
 export default new Router({
@@ -38,6 +39,11 @@ export default new Router({
       path: '/404',
       name: '404',
       component: notfound
+    },
+    {
+      path: '/history',
+      name: 'history',
+      component: history
     },
     {
       path: '*',

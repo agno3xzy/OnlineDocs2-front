@@ -18,7 +18,7 @@
 
 <script>
 import navmenu from './nav-menu'
-import { diff_match_patch} from '../../static/js/diff_match_patch'
+import { diff_match_patch } from '../../static/js/diff_match_patch'
 import { update } from '../../static/js/DiffToStringArray'
 var content, new_content
 var cnt = 1
@@ -56,8 +56,11 @@ export default {
             pos = this.$refs.myQuillEditor.quill.selection.savedRange.index
             console.log(pos)
             new_content = this.content
+            var dmp = new diff_match_patch();
+            var diff = dmp.diff_main(content.replace('<br>',''),new_content.replace('<br>',''));
+            console.log(update(diff))
             content = new_content
-            this.$refs.myQuillEditor.quill.setSelection(pos-1)
+            this.$refs.myQuillEditor.quill.setSelection(pos)
         }
     },
     mounted() {

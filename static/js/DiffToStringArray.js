@@ -50,14 +50,8 @@ function loadContent() {
     content = document.getElementById('editor-container').children[0].innerHTML;
 }
 
-function update(content, new_content) {
-    // 获取光标位置
-    var pos=quill.getSelection().index;
-    //console.log("pos "+pos);
-    var dmp = new diff_match_patch();
-    new_content = document.getElementById('editor-container').children[0].innerHTML;
-    //console.log("content "+quill.getText());
-    var diff = dmp.diff_main(content.replace('<br>',''),new_content.replace('<br>',''));
+function update(diff) {
+    
     var linecount = 0;
     var position = 0;//记录删除的插入的位置
     //var diff = Diff.diffChars(content.replace('<br>',''),new_content.replace('<br>',''))
@@ -271,12 +265,7 @@ function update(content, new_content) {
             }
         }
     }
-    console.log(result);
-    console.log(diff);
-    //window.alert(document.getElementById("username").value);
-    xhr.open("post",urlString,true);
-    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;");//不加上这句，那么后台Request.Form获取不到参数a,b的数值
-    xhr.send(args);
+    return result
 
 }
 
