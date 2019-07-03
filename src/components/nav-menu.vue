@@ -5,7 +5,8 @@
         <el-input
             placeholder="请输入内容"
             v-model="searchValue"
-            style="width: 12%;position:absolute;left:75%;top:20px;">
+            size="medium"
+            style="width: 12%;position:absolute;left:75%;top:15px;">
             <i slot="prefix" class="el-input__icon el-icon-search"></i>
         </el-input>
         <div id="my">
@@ -50,21 +51,21 @@ export default {
 <style scoped>
 #app_title {
     position: absolute;
-    top: 20px;
+    top: 15px;
     left: 30px;
     font-size: 25px;
 }
 #my {
     position: absolute;
     left: 95%;
-    top: 25px;
+    top: 20px;
 }
 #menu {
     position: absolute;
     left: 0;
     top: 0;
     background-color: white;
-    height: 80px;
+    height: 60px;
     width: 100%;
     min-width: 1300px;
 }

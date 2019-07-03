@@ -117,6 +117,7 @@
 </template>
 
 <script>
+var docList = []
 import navmenu from './nav-menu'
 export default {
     inject: ['reload'],
@@ -124,17 +125,7 @@ export default {
     data() {
         return {
             category: {lastuse:true, create: false, invite: false},
-            lastUseTableData: [{docName:'111',owner:'aaa',lastUseTime:'2019-1-1',auth:'write'},
-            {docName:'222',owner:'aaa',lastUseTime:'2019-1-1',auth:'write'},
-            {docName:'111',owner:'aaa',lastUseTime:'2019-1-1',auth:'write'},
-            {docName:'111',owner:'aaa',lastUseTime:'2019-1-1',auth:'write'},
-            {docName:'111',owner:'aaa',lastUseTime:'2019-1-1',auth:'write'},
-            {docName:'111',owner:'aaa',lastUseTime:'2019-1-1',auth:'write'},
-            {docName:'111',owner:'aaa',lastUseTime:'2019-1-1',auth:'write'},
-            {docName:'111',owner:'aaa',lastUseTime:'2019-1-1',auth:'write'},
-            {docName:'111',owner:'aaa',lastUseTime:'2019-1-1',auth:'write'},
-            {docName:'111',owner:'aaa',lastUseTime:'2019-1-1',auth:'write'},
-            {docName:'111',owner:'aaa',lastUseTime:'2019-1-1',auth:'write'}],
+            lastUseTableData: [],
             createTableData: [{docName:'111',lastUseTime:'2019-1-1',shareAmount:'10'},
                             {docName:'111',lastUseTime:'2019-1-1',shareAmount:'2'}],
             inviteTableData: [{docName:'111',owner:'aaa',lastUseTime:'2019-1-1',auth:'write'}],
@@ -144,6 +135,39 @@ export default {
         }
     },
     components: { navmenu },
+    mounted() {
+        this.$axios(
+        {
+            url:'/document-manage/lastuse',
+            method:"post",
+            data:{
+                username: window.sessionStorage.username,
+            },
+            transformRequest: [function (data) {
+            // Do whatever you want to transform the data
+            let ret = ''
+            for (let it in data) {
+            // 如果要发送中文 编码 
+                ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+            }
+            return ret
+            }],
+            headers: {
+                'Content-Type':'application/x-www-form-urlencoded'
+            }
+        }).catch(error => {
+            console.log(error.message);
+        })
+        .then(response => {
+            for(var i = 0; i < response.data.docList.length; i++)
+            {
+                var docItem = response.data.docList[i]
+                docList.push(docItem)
+                this.lastUseTableData.push({docName:docItem.docName,owner:docItem.owner,lastUseTime:docItem.lastUseTime,auth:docItem.auth})
+            }
+            return (response)
+        });
+    },
     methods: {
         changeCategory() {
             var selectitem = event.target.id
@@ -170,10 +194,6 @@ export default {
         },
         uploadFile() {
             console.log(this.fileList)
-            this.$message({
-                message:'111',
-                type:'success'
-            })
             this.reload()
             let formData = new FormData()
             formData.append('username',window.sessionStorage.username)
@@ -202,7 +222,7 @@ export default {
 #main {
     position: absolute;
     left: 0;
-    top: 80px;
+    top: 60px;
     bottom: 0;
     right: 0;
     background-color: #F7F7F7;

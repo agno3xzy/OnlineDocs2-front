@@ -59,6 +59,7 @@ export default {
             })
         })
         .then(response => {
+            console.log(response.data.message)
             if(response.data.message === 'success')
             {
                 this.$message({
@@ -128,6 +129,12 @@ export default {
                     this.$message({
                         message: '你已经拥有该文档的权限',
                         duration: 2000
+                    })
+                }
+                if(response.data.message === 'success')
+                {
+                    this.$router.push({
+                        path: '/document-manage'
                     })
                 }
             });
