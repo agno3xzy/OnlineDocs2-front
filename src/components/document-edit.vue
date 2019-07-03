@@ -19,7 +19,7 @@
 <script>
 import navmenu from './nav-menu'
 import { diff_match_patch } from '../../static/js/diff_match_patch'
-import { update } from '../../static/js/DiffToStringArray'
+import { update,CurentTime } from '../../static/js/DiffToStringArray'
 var content, new_content
 var cnt = 1
 var pos
@@ -58,7 +58,36 @@ export default {
             new_content = this.content
             var dmp = new diff_match_patch();
             var diff = dmp.diff_main(content.replace('<br>',''),new_content.replace('<br>',''));
-            console.log(update(diff))
+            var opList = (update(diff))
+            this.$axios(
+            {
+                url:'/conflictHandle',
+                method:"post",
+                data:{
+                    opList: opList,
+                    newPath: this.$route.query.newPath,
+                    oldPath: this.$route.query.oldPath,
+                    username: window.sessionStorage.username,
+                    timeStamp: CurentTime()
+                },
+                transformRequest: [function (data) {
+                // Do whatever you want to transform the data
+                let ret = ''
+                for (let it in data) {
+                // 如果要发送中文 编码 
+                    ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+                }
+                return ret
+                }],
+                headers: {
+                    'Content-Type':'application/x-www-form-urlencoded'
+                }
+            }).catch(error => {
+                console.log(error.message);
+            })
+            .then(response => {
+
+            });
             content = new_content
             this.$refs.myQuillEditor.quill.setSelection(pos)
         }
