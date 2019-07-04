@@ -219,7 +219,7 @@ function update(diff) {
                                         result = result + "del," + linecount.toString() + "," + position.toString() + "," + textlist[j].toString() + ",true.";
                                         linecount += 1;
                                     }
-                                    result = result + "del," + linecount.toString() + "," + position.toString() + "," + textlist[textlist.length-1].toString() + ",false.";
+                                    //result = result + "del," + linecount.toString() + "," + position.toString() + "," + textlist[textlist.length-1].toString() + ",false.";
                                 } else
                                 {
                                     var isFirstLineDel = true; //第一行是否完全删除

@@ -18,7 +18,7 @@
 <script>
 import navmenu from './nav-menu'
 import { diff_match_patch } from '../../static/js/diff_match_patch'
-import { update,CurentTime } from '../../static/js/DiffToStringArray'
+import { update,CurentTime,replaceAll } from '../../static/js/DiffToStringArray'
 var content, new_content
 var cnt = 1
 var pos
@@ -26,7 +26,7 @@ export default {
     name: 'document-edit',
     data() {
         return {
-            docName: '111',
+            docName: '',
             content: '',
             editorOption: { 
                 placeholder: "输入任何内容，支持html",
@@ -55,9 +55,10 @@ export default {
             console.log('content:',content)
             console.log('new_content:',new_content)
             var dmp = new diff_match_patch();
-            var diff = dmp.diff_main(content.replace('<br>',''),new_content.replace('<br>',''));
+            var diff = dmp.diff_main(replaceAll(content,'<br>'),replaceAll(new_content,'<br>'));
             var opList = (update(diff))
             console.log(opList)
+            console.log("diff:",diff)
             this.$axios(
             {
                 url:'/conflictHandle',
@@ -89,7 +90,6 @@ export default {
                 // content = new_content
                 await this.changeData(response.data.content)
                 this.$refs.myQuillEditor.quill.setSelection(pos)
-                console.log(4)
             });
         },
         async changeData(response_content)

@@ -302,6 +302,13 @@ export default {
         handleExplore(index, row) {
             console.log(index, row)
             console.log(docList)
+            this.$router.push({
+                path: '/document-explore',
+                query: {
+                    oldPath: docList[index].oldPath,
+                    newPath: docList[index].newPath
+                }
+            })
         },
         handleEdit(index, row) {
             console.log(index, row)
@@ -317,10 +324,88 @@ export default {
         handleDelete(index, row) {
             console.log(index, row)
             console.log(docList)
+            this.$axios(
+            {
+                url:'/delete',
+                method:"post",
+                data:{
+                    oldPath: docList[index].oldPath,
+                    newPath: docList[index].newPath
+                },
+                transformRequest: [function (data) {
+                // Do whatever you want to transform the data
+                let ret = ''
+                for (let it in data) {
+                // 如果要发送中文 编码 
+                    ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+                }
+                return ret
+                }],
+                headers: {
+                    'Content-Type':'application/x-www-form-urlencoded'
+                }
+            }).catch(error => {
+                console.log(error.message);
+            })
+            .then(response => {
+                if(response.data.message === 'success')
+                {
+                    this.$message({
+                        message: '删除成功',
+                        type: 'success',
+                        duration: 2000
+                    })
+                    this.reload()
+                } else if(response.data.message === 'fail')
+                {
+                    this.$message({
+                        message: '删除失败，请重试',
+                        type: 'error',
+                        duration: 2000
+                    })
+                }
+            });
         },
         handleDownload(index, row) {
-            console.log(index, row)
-            console.log(docList)
+            this.$axios(
+            {
+                url:'/download',
+                method:"post",
+                data:{
+                    path: docList[index].oldPath,
+                },
+                transformRequest: [function (data) {
+                // Do whatever you want to transform the data
+                let ret = ''
+                for (let it in data) {
+                // 如果要发送中文 编码 
+                    ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+                }
+                return ret
+                }],
+                headers: {
+                    'Content-Type':'application/x-www-form-urlencoded'
+                }
+            }).catch(error => {
+                console.log(error.message);
+            })
+            .then(response => {
+                var fileContent = response.data.content
+                var filename = response.data.fileName
+                const blob = new Blob([fileContent])
+                if (window.navigator.msSaveOrOpenBlob) {
+                    // 兼容IE10
+                    navigator.msSaveBlob(blob, filename)
+                } else {
+                    //  chrome/firefox
+                    let aTag = document.createElement('a')
+                    aTag.download = filename
+                    aTag.href = URL.createObjectURL(blob)
+                    aTag.click()
+                    URL.revokeObjectURL(aTag.href)
+                }
+                return (response)
+            });
         },
         handleExceed(files, fileList) {
             this.$message.warning(`最多上传 ${files.length} 个文件`)
@@ -339,6 +424,21 @@ export default {
                 .then(response => {
                 if (response.code === 200) {
                     // 提交成功将要执行的代码
+                    if(response.data.message === 'success')
+                    {
+                        this.$message({
+                            message: '上传成功',
+                            type: 'success',
+                            duration: 2000
+                        })
+                    } else if(response.data.message === 'fail')
+                    {
+                        this.$message({
+                            message: '上传失败，请重试',
+                            type: 'error',
+                            duration: 2000
+                        })
+                    }
                 }
                 })
                 .catch(function(error) {
