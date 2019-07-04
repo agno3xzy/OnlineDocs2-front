@@ -56,8 +56,7 @@ function update(diff) {
     var position = 0;//记录删除的插入的位置
     //var diff = Diff.diffChars(content.replace('<br>',''),new_content.replace('<br>',''))
     //console.log(new_content.replace('<br>',''));
-
-    var result = []; //最终发送给后端的数据 格式:"ins"/"del","line","startposition","content".
+    var result = ''; //最终发送给后端的数据 格式:"ins"/"del","line","startposition","content".
     for(var i = 0; i < diff.length; i++)
     {
         var difflist = Array.from(diff[i]); //格式:[插入(1)/删除(-1)/相等(0),对应的字符串]

@@ -9,8 +9,7 @@
         <quill-editor
             v-model="content"
             ref="myQuillEditor"
-            :options="editorOption"
-            @change="onEditorChange($event)">
+            :options="editorOption">
         </quill-editor>
     </div>
 </div>
@@ -49,13 +48,12 @@ export default {
     },
     components: {navmenu},
     methods: {
-        onEditorChange({ editor, html, text }) {
-            this.content = html
-        },
         timeUpdate() {
-            pos = this.$refs.myQuillEditor.quill.selection.savedRange.index
-            console.log(pos)
+            pos = this.$refs.myQuillEditor.quill.getSelection().index
             new_content = this.content
+            console.log('比较时:')
+            console.log('content:',content)
+            console.log('new_content:',new_content)
             var dmp = new diff_match_patch();
             var diff = dmp.diff_main(content.replace('<br>',''),new_content.replace('<br>',''));
             var opList = (update(diff))
@@ -86,11 +84,25 @@ export default {
             }).catch(error => {
                 console.log(error.message);
             })
-            .then(response => {
-
+            .then(async response => {
+                // this.content = response.data.content
+                // content = new_content
+                await this.changeData(response.data.content)
+                this.$refs.myQuillEditor.quill.setSelection(pos)
+                console.log(4)
             });
+        },
+        async changeData(response_content)
+        {
+            this.$refs.myQuillEditor.quill.deleteText(0,this.content.length)
+            this.$refs.myQuillEditor.quill.insertText(0,response_content)
+            // console.log('改变前:')
+            // console.log('content:',content)
+            // console.log('new_content:',new_content)
             content = new_content
-            this.$refs.myQuillEditor.quill.setSelection(pos)
+            // console.log('改变后:')
+            // console.log('content:',content)
+            // console.log('new_content:',new_content)
         }
     },
     mounted() {
@@ -120,7 +132,8 @@ export default {
             console.log(error.message);
         })
         .then(response => {
-            this.content = response.data.content
+            //this.content = response.data.content
+            this.$refs.myQuillEditor.quill.insertText(0,response.data.content)
             content = this.content
             pos = 0
             this.timer = setInterval(this.timeUpdate,5000)
