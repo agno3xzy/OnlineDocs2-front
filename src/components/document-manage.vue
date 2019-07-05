@@ -173,7 +173,7 @@ export default {
         convertTimeFormat(longIntTime) {
             var date = new Date(longIntTime)
             return date.getFullYear() + '-' + (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-'
-            + (date.getDate() < 10 ? '0' +(date.getDate()) : date.getDate) + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
+            + (date.getDate() < 10 ? '0' +(date.getDate()) : date.getDate()) + ' ' + (date.getHours() < 10 ? '0' + (date.getHours()) : date.getHours()) + ':' + date.getMinutes() + ':' + date.getSeconds()
         },
         changeCategory() {
             var selectitem = event.target.id
@@ -494,11 +494,17 @@ export default {
 }
 a{
     text-decoration: none;
+    transition-property: color;
+    transition-duration: 1s;
+    transition-timing-function: ease-out;
     color:#A5A5A5;
     font-size:18px;
     margin-left: 30px;
 }
 a:hover {
+    transition-property: color;
+    transition-duration: 1s;
+    transition-timing-function: ease-out;
     color: #555555;
 }
 .active {
