@@ -25,6 +25,7 @@
                         @click="handleExplore(scope.$index, scope.row)">查看</el-button>
                         <el-button
                         size="mini"
+                        v-show="lastUseTableData[scope.$index].auth === 'share' || lastUseTableData[scope.$index].auth === 'own'"
                         @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
                         <el-button
                         type="primary"
@@ -84,6 +85,7 @@
                         @click="handleExplore(scope.$index, scope.row)">查看</el-button>
                         <el-button
                         size="mini"
+                        v-show="inviteTableData[scope.$index].auth === 'share'"
                         @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
                         <el-button
                         type="primary"

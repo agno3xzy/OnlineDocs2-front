@@ -2,6 +2,16 @@
 <div>
     <navmenu></navmenu>
     <div id="editor">
+        <div id="history-menu" @mouseenter="showChange" @mouseleave="showChange" v-bind:class="{ visibleMenu: show, hiddenMenu:!show }" align="center">
+            <span class="iconfont icon-jiantou" style="position:absolute;right:5%;top:45%;font-size:30px;"></span>
+            <div v-bind:class="{ visibleItem: showItem, hiddenItem:!showItem }">
+                <div class="history-item" style="background-color:#F5DEB3;">
+                    <span>时间：2019-1-1</span>
+                    <br/>
+                    <a href="javascript:void(0)" style="text-decoration:none;color:black;"><span class="iconfont icon-revert" style="font-size:20px;"></span></a>
+                </div>
+            </div>
+        </div>
         <div id="title-group" align="left">
             <el-button type="text" icon="el-icon-arrow-left" style="font-size:20px;color:black;" @click="toDocumentManage">返回</el-button>
             <el-tag style="margin-left:30px;">文档：{{docName}}</el-tag>
@@ -84,16 +94,22 @@ export default {
                     ]
                 }
             },
-            timer: '',
+            timer: '', //定时器的id
+            show: false, //展示侧边栏
+            showItem: false, //展示侧边栏中的内容 稍有0.3s延迟
             shareDialogVisible: false,
-            shareType: '编辑',
-            shareLink: '',
+            shareType: '编辑', //分享类型
+            shareLink: '', //生成的分享链接
             userList: [], //这次邀请人员的数组
             userOptions: [] //所有可以邀请的人员选项
         }
     },
     components: {navmenu},
     methods: {
+        showChange() {
+            this.show = !this.show
+            this.showItem = !this.showItem
+        },
         toDocumentManage() {
             this.$router.push({
                 path: '/document-manage'
@@ -354,7 +370,43 @@ export default {
 </script>
 
 <style scoped>
-#editor{
+.visibleMenu {
+
+    width: 300px;
+    z-index: 2;
+    background-color: white;
+    transition: width, background-color, z-index;
+    transition-duration: 0.5s;
+}
+.hiddenMenu {
+    width: 50px;
+    background-color: #F7F7F7;
+    z-index: 0;
+    transition: width, background-color, z-index;
+    transition-duration: 0.5s;
+}
+.visibleItem {
+    opacity: 1;
+    transition: opacity;
+    transition-delay: 0.3s;
+    transition-duration: 1s;
+}
+.hiddenItem {
+    opacity: 0;
+    transition: opacity;
+    transition-duration: 0.1s;
+}
+.history-item {
+    width: 200px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+#history-menu {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+}
+#editor {
     position: absolute;
     left: 0;
     top: 60px;
