@@ -164,12 +164,17 @@ export default {
             {
                 var docItem = response.data.docList[i]
                 docList.push(docItem)
-                this.lastUseTableData.push({docName:docItem.docName,owner:docItem.owner,lastUseTime:docItem.lastUseTime,auth:docItem.auth})
+                this.lastUseTableData.push({docName:docItem.docName,owner:docItem.owner,lastUseTime:this.convertTimeFormat(docItem.lastUseTime),auth:docItem.auth})
             }
             return (response)
         });
     },
     methods: {
+        convertTimeFormat(longIntTime) {
+            var date = new Date(longIntTime)
+            return date.getFullYear() + '-' + (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-'
+            + (date.getDate() < 10 ? '0' +(date.getDate()) : date.getDate) + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
+        },
         changeCategory() {
             var selectitem = event.target.id
             for(var i in this.category) {
@@ -210,7 +215,7 @@ export default {
                     {
                         var docItem = response.data.docList[i]
                         docList.push(docItem)
-                        this.lastUseTableData.push({docName:docItem.docName,owner:docItem.owner,lastUseTime:docItem.lastUseTime,auth:docItem.auth})
+                        this.lastUseTableData.push({docName:docItem.docName,owner:docItem.owner,lastUseTime:this.convertTimeFormat(docItem.lastUseTime),auth:docItem.auth})
                     }
                     return (response)
                 });
@@ -254,7 +259,7 @@ export default {
                         {
                             userData.push({username:docItem.userList[j]})
                         }
-                        this.createTableData.push({docName:docItem.docName,lastUseTime:docItem.lastUseTime,shareAmount:docItem.shareAmount,userData:userData})
+                        this.createTableData.push({docName:docItem.docName,lastUseTime:this.convertTimeFormat(docItem.lastUseTime),shareAmount:docItem.shareAmount,userData:userData})
                     }
                     return (response)
                 });
@@ -293,7 +298,7 @@ export default {
                     {
                         var docItem = response.data.docList[i]
                         docList.push(docItem)
-                        this.inviteTableData.push({docName:docItem.docName,owner:docItem.owner,lastUseTime:docItem.lastUseTime,auth:docItem.auth})
+                        this.inviteTableData.push({docName:docItem.docName,owner:docItem.owner,lastUseTime:this.convertTimeFormat(docItem.lastUseTime),auth:docItem.auth})
                     }
                     return (response)
                 });
@@ -499,7 +504,13 @@ a:hover {
 .active {
     color: #555555;
 }
-.el-table {
+#create-table {
+    position: relative;
+    top: 100px;
+    left: 15%;
+}
+#lastuse-table,#invite-table {
+    position: relative;
     top: 100px;
     left: 20%;
 }

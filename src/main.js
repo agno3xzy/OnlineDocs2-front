@@ -6,6 +6,8 @@ import router from './router'
 import axios from 'axios'
 import ElementUI from 'element-ui'
 import VueQuillEditor from 'vue-quill-editor'
+import VueClipboard from 'vue-clipboard2';
+
 // require styles
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
@@ -17,6 +19,7 @@ Vue.prototype.$axios = axios
 axios.defaults.baseURL = process.env.BASE_API;
 Vue.use(ElementUI)
 Vue.use(VueQuillEditor, /* { default global options } */)
+Vue.use(VueClipboard)
 
 
 /* eslint-disable no-new */

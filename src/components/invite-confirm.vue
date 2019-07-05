@@ -68,6 +68,7 @@ export default {
                     duration: 0,
                     showClose: true
                 })
+                window.sessionStorage.removeItem('username') //如果是当前页面跳转，先清除之前的用户信息
             } else
             {
                 this.$router.push({
@@ -133,6 +134,7 @@ export default {
                 }
                 if(response.data.message === 'success')
                 {
+                    window.sessionStorage.setItem('username',this.login.username)
                     this.$router.push({
                         path: '/document-manage'
                     })
