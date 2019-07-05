@@ -110,7 +110,7 @@ function update(diff) {
                             result = result + "ins," + linecount.toString() + "," + position.toString() + "," + textlist[j].toString() + ",true.";
                         }
                     }
-                    if(diffstring === "</p><p>") //在中间新起一行 两种情况 新起一行或者把原有一行的一部分换行
+                    if(diffstring.indexOf("</p><p>") !== -1) //在中间新起一行 三种情况 新起一行内容为空或者新起一行插入新内容或者把原有一行的一部分换行
                     {
                         var beforedifflist = Array.from(diff[i-1]);
                         var nextdifflist = Array.from(diff[i+1]);
@@ -118,19 +118,25 @@ function update(diff) {
                         var nextdiffstring = nextdifflist[1];
                         var beforedifftype = beforedifflist[0];
                         var nextdifftype = nextdifflist[0];
-                        if(beforedifftype === 0 && beforediffstring.lastIndexOf("<p>") === beforediffstring.length - 3) //说明是新起一行
+                        if(diffstring === '</p><p>') //说明新起一行内容为空
                         {
-                            result = result + "ins," + linecount.toString() + "," + position.toString() + "," + "" + ",true.";
+                            if(beforedifftype === 0 && beforediffstring.lastIndexOf("<p>") === beforediffstring.length - 3) //说明是新起一行
+                            {
+                                result = result + "ins," + linecount.toString() + "," + position.toString() + "," + "" + ",true.";
+                            } else
+                            {
+                                //console.log(nextdiffstring.indexOf("</p>"));
+                                var alterstring = nextdiffstring.slice(0,nextdiffstring.indexOf("</p>"));
+                                //console.log(alterstring);
+                                result = result + "del," + linecount.toString() + "," + position.toString() + "," + alterstring.toString() + ",false.";
+                                position = 0;
+                                result = result + "ins," + linecount.toString() + "," + position.toString() + "," + alterstring.toString() + ",true.";
+                            }
                         } else
                         {
-                            //console.log(nextdiffstring.indexOf("</p>"));
-                            var alterstring = nextdiffstring.slice(0,nextdiffstring.indexOf("</p>"));
-                            //console.log(alterstring);
-                            result = result + "del," + linecount.toString() + "," + position.toString() + "," + alterstring.toString() + ",false.";
-                            position = 0;
-                            result = result + "ins," + linecount.toString() + "," + position.toString() + "," + alterstring.toString() + ",true.";
-
+                            result = result + "ins," + linecount.toString() + "," + position.toString() + "," + diffstring.replace('</p><p>','') + ",true.";
                         }
+                        
                     }
                     position = 0;
                 }
@@ -156,7 +162,7 @@ function update(diff) {
                         {
                             if(diffstring.lastIndexOf("<p>") === diffstring.length - 3 && i !== diff.length - 1) //说明有下一条信息 需要进行判断最后的新建行是否为插入操作
                             {
-                                if(Array.from(diff[i+1])[0] === 1) //如果下一行是插入操作 则行数-1
+                                if(Array.from(diff[i+1])[0] === 1 && Array.from(diff[i+1])[1].indexOf('</p><p>') !== -1) //如果下一行是插入操作 则行数-1
                                 {
                                     console.log("-1");
                                     linecount -= 1;
