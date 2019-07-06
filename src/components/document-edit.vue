@@ -3,17 +3,19 @@
     <navmenu></navmenu>
     <div id="editor">
         <div id="history-menu" @mouseenter="showChange" @mouseleave="showChange" v-bind:class="{ visibleMenu: show, hiddenMenu:!show }" align="center">
-            <span class="iconfont icon-jiantou" style="position:absolute;right:5%;top:45%;font-size:30px;"></span>
+            <span v-show="!showItem" class="iconfont icon-arrow-right" style="position:absolute;right:5%;top:45%;font-size:30px;"></span>
+            <span v-show="showItem" class="iconfont icon-arrow-left" style="position:absolute;right:5%;top:45%;font-size:30px;"></span>
             <div v-bind:class="{ visibleItem: showItem, hiddenItem:!showItem }">
-                <div class="history-item" style="background-color:#F5DEB3;">
-                    <span>时间：2019-1-1</span>
+                <span style="margin-top:10px;display:inline-block">目前历史版本：</span>
+                <div class="history-item" v-for="(val,index) in historyOptions" ref="block" v-bind:key="'historyItem'+index" style="margin-top:20px;">
+                    <span style="font-size:15px;">{{val.timestamp}}</span>
                     <br/>
-                    <a href="javascript:void(0)" style="text-decoration:none;color:black;"><span class="iconfont icon-revert" style="font-size:20px;"></span></a>
+                    <el-button type="text" style="color:black" @click="toDocumentHistory(index)">查看 <span class="iconfont icon-lookup" style="font-size:15px;"></span></el-button>
                 </div>
             </div>
         </div>
         <div id="title-group" align="left">
-            <el-button type="text" icon="el-icon-arrow-left" style="font-size:20px;color:black;" @click="toDocumentManage">返回</el-button>
+            <el-button type="text" icon="el-icon-arrow-left" style="font-size:20px;color:black;margin-left:20px;" @click="toDocumentManage">返回</el-button>
             <el-tag style="margin-left:30px;">文档：{{docName}}</el-tag>
             <el-tag type="success" style="margin-left:10px;">文档所有者：{{docOwner}}</el-tag>
             <el-tag type="warning" style="margin-left:10px;">共享成员：{{userString}}</el-tag>
@@ -68,8 +70,8 @@ import { diff_match_patch } from '../../static/js/diff_match_patch'
 import { update,CurentTime,replaceAll } from '../../static/js/DiffToStringArray'
 import { setTimeout, clearTimeout } from 'timers';
 var content, new_content
-var cnt = 1
-var pos
+var pos //设置光标位置
+var loadHistoryFlag = true //记录是否需要从后端获取历史版本
 export default {
     name: 'document-edit',
     data() {
@@ -101,7 +103,8 @@ export default {
             shareType: '编辑', //分享类型
             shareLink: '', //生成的分享链接
             userList: [], //这次邀请人员的数组
-            userOptions: [] //所有可以邀请的人员选项
+            userOptions: [], //所有可以邀请的人员选项
+            historyOptions: [] //所有历史版本的信息 存储格式为  时间戳:背景颜色
         }
     },
     components: {navmenu},
@@ -109,10 +112,65 @@ export default {
         showChange() {
             this.show = !this.show
             this.showItem = !this.showItem
+            //判断是否需要重新从后端发取信息
+            if(loadHistoryFlag)
+            {
+                this.$axios(
+                {
+                    url:'/version-manage/show',
+                    method:"post",
+                    data:{
+                        username: window.sessionStorage.username,
+                        filepath: this.$store.state.doc.oldPath
+                    },
+                    transformRequest: [function (data) {
+                    // Do whatever you want to transform the data
+                    let ret = ''
+                    for (let it in data) {
+                    // 如果要发送中文 编码 
+                        ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+                    }
+                    return ret
+                    }],
+                    headers: {
+                        'Content-Type':'application/x-www-form-urlencoded'
+                    }
+                }).catch(error => {
+                    console.log(error.message);
+                })
+                .then(async response => {
+                    await this.changeHistoryOptions(response.data.versionItem)
+                    for(var i = 0; i < this.historyOptions.length; i++)
+                    {
+                        this.$refs['block'][i].style.backgroundColor = this.historyOptions[i].color
+                    }
+                });
+                loadHistoryFlag = false
+            }
+        },
+        async changeHistoryOptions(versionItem) 
+        {
+            for(var i = this.historyOptions.length-1; i >= 0; i--)
+            {
+                this.$delete(this.historyOptions,i)
+            }
+            for(var time in versionItem)
+            {
+                this.historyOptions.push({timestamp:time,color:versionItem[time]})
+            }
         },
         toDocumentManage() {
             this.$router.push({
                 path: '/document-manage'
+            })
+        },
+        toDocumentHistory(index) {
+            this.$router.push({
+                path: '/document-history',
+                query: {
+                    timeStamp: this.historyOptions[index].timestamp,
+                    docName: this.docName
+                }
             })
         },
         timeUpdate() {
@@ -132,8 +190,8 @@ export default {
                 method:"post",
                 data:{
                     opList: opList,
-                    newPath: this.$route.query.newPath,
-                    oldPath: this.$route.query.oldPath,
+                    newPath: this.$store.state.doc.newPath,
+                    oldPath: this.$store.state.doc.oldPath,
                     username: window.sessionStorage.username,
                     timeStamp: CurentTime()
                 },
@@ -179,7 +237,7 @@ export default {
                 method:"post",
                 data:{
                     username: window.sessionStorage.username,
-                    filepath: this.$route.query.oldPath
+                    filepath: this.$store.state.doc.oldPath
                 },
                 transformRequest: [function (data) {
                 // Do whatever you want to transform the data
@@ -204,6 +262,7 @@ export default {
                         type: 'success',
                         duration: 2000
                     }) 
+                    loadHistoryFlag = true //由于生成了新的历史版本 所以需要重新从后端获取
                 } else if(response.data.message === 'fail')
                 {
                     this.$message({
@@ -321,8 +380,8 @@ export default {
             url:'/edit',
             method:"post",
             data:{
-                oldPath: this.$route.query.oldPath,
-                newPath: this.$route.query.newPath
+                oldPath: this.$store.state.doc.oldPath,
+                newPath: this.$store.state.doc.newPath
             },
             transformRequest: [function (data) {
             // Do whatever you want to transform the data
@@ -359,17 +418,20 @@ export default {
             {
                 this.userString = userString
             }
+            loadHistoryFlag = true //每次进入页面需要加载历史记录
             this.timer = setTimeout(this.timeUpdate,3000)
         });
     },
     beforeDestroy() {
-        console.log('销毁')
         clearTimeout(this.timer)
     }
 }
 </script>
 
 <style scoped>
+body {
+    position: absolute;
+}
 .visibleMenu {
 
     width: 300px;
@@ -379,7 +441,7 @@ export default {
     transition-duration: 0.5s;
 }
 .hiddenMenu {
-    width: 50px;
+    width: 70px;
     background-color: #F7F7F7;
     z-index: 0;
     transition: width, background-color, z-index;
@@ -405,6 +467,7 @@ export default {
     left: 0;
     top: 0;
     height: 100%;
+    overflow: auto;
 }
 #editor {
     position: absolute;

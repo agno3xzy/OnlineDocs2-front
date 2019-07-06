@@ -88,13 +88,13 @@ function update(diff) {
                         var nextdiffstring = nextdifflist[1];
                         var beforedifftype = beforedifflist[0];
                         var nextdifftype = nextdifflist[0];
-                        if(beforediffstring.lastIndexOf("<p>") === beforediffstring.length - 3 && nextdiffstring.indexOf("</p>") == 0
-                            && beforedifftype === 0 && nextdifftype === 0)
-                        {
-                            //console.log("+1");
-                            position = 0;
-                            linecount += 1;
-                        }
+                        // if(beforediffstring.lastIndexOf("<p>") === beforediffstring.length - 3 && nextdiffstring.indexOf("</p>") == 0
+                        //     && beforedifftype === 0 && nextdifftype === 0)
+                        // {
+                        //     //console.log("+1");
+                        //     position = 0;
+                        //     linecount += 1;
+                        // }
                         result = result + "ins," + linecount.toString() + "," + position.toString() + "," + diffstring.toString() + ",false.";
                         //position += diffstring.length; //位置向后挪
                     }

@@ -11,6 +11,9 @@
             <el-form-item label="确认密码" prop="confirmPassword">
                 <el-input type="password" v-model="form.confirmPassword"></el-input>
             </el-form-item>
+            <el-form-item label="邮箱" prop="email">
+                <el-input v-model="form.email"></el-input>
+            </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="createUser" style="width:100px;">注册</el-button>
             </el-form-item>
@@ -85,11 +88,26 @@ export default {
                 callback()
             }
         };
+        var validateEmail = (rule, value, callback) => {
+            if (value === '') {
+            callback(new Error('邮箱不能为空'));
+            } else {
+            if (value !== '') { 
+                var reg=/^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
+                if(!reg.test(value)){
+                    callback(new Error('请输入有效的邮箱'));
+                }
+            }
+                callback();
+            }
+        };
+
         return {
             form: {
                 username: '',
                 password: '',
                 confirmPassword: '',
+                email: ''
             },
             rule: {
                 username: [{validator: validateUsername, trigger: 'blur'}],
@@ -97,7 +115,8 @@ export default {
                     {validator:validatePassword, trigger: 'blur'},
                     {min: 6, message: '密码至少6位', trigger: 'blur'}
                 ],
-                confirmPassword: [{validator: validateConfirmPassword, trigger: 'blur'}]
+                confirmPassword: [{validator: validateConfirmPassword, trigger: 'blur'}],
+                email: [{validator: validateEmail, trigger: 'blur'}]
             }
         }
     },
@@ -109,7 +128,8 @@ export default {
                 method:"post",
                 data:{
                     username: this.form.username,
-                    password: this.form.password
+                    password: this.form.password,
+                    email: this.form.email
                 },
                 transformRequest: [function (data) {
                 // Do whatever you want to transform the data

@@ -3,8 +3,7 @@
     <navmenu></navmenu>
     <div id="editor">
         <div id="title-group" align="left">
-            <i class="el-icon-arrow-left"></i> 
-            <span style="margin-left:10px;">{{docName}}</span>
+            <el-button type="text" icon="el-icon-arrow-left" style="font-size:20px;color:black;" @click="toDocumentManage">返回</el-button>
         </div>
         <quill-editor
             v-model="content"
@@ -51,8 +50,8 @@ export default {
                 method:"post",
                 data:{
                     opList: [],
-                    newPath: this.$route.query.newPath,
-                    oldPath: this.$route.query.oldPath,
+                    newPath: this.$store.state.doc.newPath,
+                    oldPath: this.$store.state.doc.oldPath,
                     username: window.sessionStorage.username,
                     timeStamp: CurentTime()
                 },
@@ -76,6 +75,12 @@ export default {
                 this.$refs.myQuillEditor.quill.insertText(0,response.data.content)
             });
         },
+        toDocumentManage() {
+            this.$store.commit('removeFilePath')
+            this.$router.push({
+                path: '/document-manage'
+            })
+        }
     },
     mounted() {
         //与后端通讯 获取文件内容
@@ -85,8 +90,8 @@ export default {
             url:'/edit',
             method:"post",
             data:{
-                oldPath: this.$route.query.oldPath,
-                newPath: this.$route.query.newPath
+                newPath: this.$store.state.doc.newPath,
+                oldPath: this.$store.state.doc.oldPath
             },
             transformRequest: [function (data) {
             // Do whatever you want to transform the data

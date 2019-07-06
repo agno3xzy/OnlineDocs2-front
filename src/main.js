@@ -7,6 +7,7 @@ import axios from 'axios'
 import ElementUI from 'element-ui'
 import VueQuillEditor from 'vue-quill-editor'
 import VueClipboard from 'vue-clipboard2';
+import store from './store'
 
 // require styles
 import 'quill/dist/quill.core.css'
@@ -21,11 +22,11 @@ Vue.use(ElementUI)
 Vue.use(VueQuillEditor, /* { default global options } */)
 Vue.use(VueClipboard)
 
-
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App },
   template: '<App/>'
 })

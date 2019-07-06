@@ -5,7 +5,7 @@
         <div id="history">
             <div v-for="(val,index) in historyItems" ref="block" @click="revert(val,index)" class="timeblock">
                 <span>{{val.history}}</span>
-                <a href="javascript:void(0)" v-on:click="revert(index)" style="margin-left:20px;"><i class="el-icon-back"></i></a>
+                <a href="javascript:void(0)" style="margin-left:20px;"><i class="el-icon-back"></i></a>
             </div>
         </div>
         <quill-editor
@@ -68,7 +68,7 @@ export default {
             console.log(error.message);
         })
         .then(response => {
-            for(var time in response.data.varsionItem)
+            for(var time in response.data.versionItem)
             {
                 this.historyItems.push({history:time,color:response.data.versionItem[time]})
             }

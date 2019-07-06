@@ -12,7 +12,7 @@
             :header-cell-style="{background:'#F7F7F7'}"
             :cell-style="{background:'#F7F7F7'}"
             :data="lastUseTableData"
-            style="width: 900px;"
+            style="width: 100%;"
             max-height="500">
                 <el-table-column prop="docName" label="文档名" width="150" align="center"></el-table-column>
                 <el-table-column prop="owner" label="文档所有者" width="150" align="center"></el-table-column>
@@ -40,7 +40,7 @@
             :header-cell-style="{background:'#F7F7F7'}"
             :cell-style="{background:'#F7F7F7'}"
             :data="createTableData"
-            style="width: 1050px;"
+            style="width: 100%;"
             max-height="500">
                 <el-table-column prop="docName" label="文档名" width="150" align="center"></el-table-column>
                 <el-table-column prop="lastUseTime" label="最近修改时间" width="150" align="center"></el-table-column>
@@ -72,7 +72,7 @@
             :header-cell-style="{background:'#F7F7F7'}"
             :cell-style="{background:'#F7F7F7'}"
             :data="inviteTableData"
-            style="width: 900px;"
+            style="width: 100%;"
             max-height="500">
                 <el-table-column prop="docName" label="文档名" width="150" align="center"></el-table-column>
                 <el-table-column prop="owner" label="文档所有者" width="150" align="center"></el-table-column>
@@ -124,6 +124,7 @@
 <script>
 var docList = []
 import navmenu from './nav-menu'
+import { convertTimeFormat } from '../../static/js/converTime'
 export default {
     inject: ['reload'],
     name: 'document-manage',
@@ -166,17 +167,12 @@ export default {
             {
                 var docItem = response.data.docList[i]
                 docList.push(docItem)
-                this.lastUseTableData.push({docName:docItem.docName,owner:docItem.owner,lastUseTime:this.convertTimeFormat(docItem.lastUseTime),auth:docItem.auth})
+                this.lastUseTableData.push({docName:docItem.docName,owner:docItem.owner,lastUseTime:convertTimeFormat(docItem.lastUseTime),auth:docItem.auth})
             }
             return (response)
         });
     },
     methods: {
-        convertTimeFormat(longIntTime) {
-            var date = new Date(longIntTime)
-            return date.getFullYear() + '-' + (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-'
-            + (date.getDate() < 10 ? '0' +(date.getDate()) : date.getDate()) + ' ' + (date.getHours() < 10 ? '0' + (date.getHours()) : date.getHours()) + ':' + date.getMinutes() + ':' + date.getSeconds()
-        },
         changeCategory() {
             var selectitem = event.target.id
             for(var i in this.category) {
@@ -217,7 +213,7 @@ export default {
                     {
                         var docItem = response.data.docList[i]
                         docList.push(docItem)
-                        this.lastUseTableData.push({docName:docItem.docName,owner:docItem.owner,lastUseTime:this.convertTimeFormat(docItem.lastUseTime),auth:docItem.auth})
+                        this.lastUseTableData.push({docName:docItem.docName,owner:docItem.owner,lastUseTime:convertTimeFormat(docItem.lastUseTime),auth:docItem.auth})
                     }
                     return (response)
                 });
@@ -261,7 +257,7 @@ export default {
                         {
                             userData.push({username:docItem.userList[j]})
                         }
-                        this.createTableData.push({docName:docItem.docName,lastUseTime:this.convertTimeFormat(docItem.lastUseTime),shareAmount:docItem.shareAmount,userData:userData})
+                        this.createTableData.push({docName:docItem.docName,lastUseTime:convertTimeFormat(docItem.lastUseTime),shareAmount:docItem.shareAmount,userData:userData})
                     }
                     return (response)
                 });
@@ -300,7 +296,7 @@ export default {
                     {
                         var docItem = response.data.docList[i]
                         docList.push(docItem)
-                        this.inviteTableData.push({docName:docItem.docName,owner:docItem.owner,lastUseTime:this.convertTimeFormat(docItem.lastUseTime),auth:docItem.auth})
+                        this.inviteTableData.push({docName:docItem.docName,owner:docItem.owner,lastUseTime:convertTimeFormat(docItem.lastUseTime),auth:docItem.auth})
                     }
                     return (response)
                 });
@@ -309,23 +305,17 @@ export default {
         handleExplore(index, row) {
             console.log(index, row)
             console.log(docList)
+            this.$store.commit('setFilePath', {oldPath:docList[index].oldPath, newPath:docList[index].newPath})
             this.$router.push({
-                path: '/document-explore',
-                query: {
-                    oldPath: docList[index].oldPath,
-                    newPath: docList[index].newPath
-                }
+                path: '/document-explore'
             })
         },
         handleEdit(index, row) {
             console.log(index, row)
             console.log(docList)
+            this.$store.commit('setFilePath', {oldPath:docList[index].oldPath, newPath:docList[index].newPath})
             this.$router.push({
-                path: '/document-edit',
-                query: {
-                    oldPath: docList[index].oldPath,
-                    newPath: docList[index].newPath
-                }
+                path: '/document-edit'
             })
         },
         handleDelete(index, row) {
@@ -429,8 +419,6 @@ export default {
             formData.append('fileUploadFileName',this.fileList[0].name)
             this.$axios.post('/upload', formData)
                 .then(response => {
-                if (response.code === 200) {
-                    // 提交成功将要执行的代码
                     if(response.data.message === 'success')
                     {
                         this.$message({
@@ -438,6 +426,9 @@ export default {
                             type: 'success',
                             duration: 2000
                         })
+                        setTimeout(() => {
+                            this.reload()
+                        },1000)
                     } else if(response.data.message === 'fail')
                     {
                         this.$message({
@@ -446,7 +437,6 @@ export default {
                             duration: 2000
                         })
                     }
-                }
                 })
                 .catch(function(error) {
                     console.log(error)
@@ -475,6 +465,9 @@ export default {
 </script>
 
 <style scoped>
+body {
+    position: absolute;
+}
 #main {
     position: absolute;
     left: 0;
@@ -516,10 +509,12 @@ a:hover {
     position: relative;
     top: 100px;
     left: 15%;
+    width: 1050px;
 }
 #lastuse-table,#invite-table {
     position: relative;
     top: 100px;
     left: 20%;
+    width: 900px;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <router-view v-if="isRouterAlive"/>
+    <router-view class="router-view" v-if="isRouterAlive"/>
   </div>
 </template>
 
@@ -14,8 +14,7 @@ export default {
   },
   data() {
     return {
-      isRouterAlive: true
-    }
+      isRouterAlive: true    }
   },
   methods: {
     reload() {
