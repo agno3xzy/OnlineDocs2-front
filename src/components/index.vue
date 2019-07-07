@@ -1,11 +1,11 @@
 <template>
     <div>
         <div>
-            <div class="loginimg"></div>
-            <div class="header" align="center">
+            <backgroundimg></backgroundimg>
+            <div class="header" ref="header" align="center">
                 OnlineDocs
             </div>
-            <div class="main" align="center">
+            <div class="main" ref="main" align="center">
                 <el-form ref="login" :model="login" style="width:250px;margin-top:20px;">
                     <el-form-item>
                         <el-input v-model="login.username" placeholder="用户名" required=true></el-input>
@@ -26,6 +26,8 @@
 </template>
 
 <script>
+import { setTimeout } from 'timers';
+import backgroundimg from './background-img'
 export default {
     name: 'index',
     data() {
@@ -65,6 +67,7 @@ export default {
                     if(response.data.isValidate === 'true')
                     {
                         window.sessionStorage.setItem('username', this.login.username) //存储用户名
+                        window.sessionStorage.setItem('email',response.data.email)
                         this.$router.push({
                             path: '/document-manage'
                         })
@@ -82,28 +85,14 @@ export default {
             this.$router.push({
                 path: '/register'
             })
-        }
+        },
     },
-    mounted() {
-        document.body.removeChild(document.getElementById('loading'))
-    }
+    components: {backgroundimg}
 }
 </script>
 
 <style scoped>
-.loginimg {
-    background: url('../../static/image/login.png');
-    background-size: 100% 100%;
-    height: 100%;
-    position: fixed;
-    width: 100%;
-    min-width: 1400px;
-    min-height: 800px;
-    filter:contrast(70%);
-    opacity: 0;
-    animation: fadeIn 1s ease 0s 1;
-    animation-fill-mode: forwards;
-}
+@import '../../static/css/keyframe.css';
 .header {
     position: absolute;
     font-size:40px;
@@ -121,29 +110,8 @@ export default {
     top: 45%;
     opacity: 0;
     transform: translate(-50%, -30%);
-    animation: fadeIn 2s ease 1;
     animation: fadeIn 2s ease 1s 1;
     animation-fill-mode: forwards;
 
-}
-@keyframes fadeIn
-{
-    from {opacity: 0;}
-    to {opacity: 1;}
-}
-@-moz-keyframes fadeIn
-{
-    from {opacity: 0;}
-    to {opacity: 1;}
-}   
-@-webkit-keyframes fadeIn
-{
-    from {opacity: 0;}
-    to {opacity: 1;}
-}
-@-o-keyframes fadeIn
-{
-    from {opacity: 0;}
-    to {opacity: 1;}
 }
 </style>

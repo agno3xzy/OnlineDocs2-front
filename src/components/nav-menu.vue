@@ -25,9 +25,11 @@
             <el-dropdown size="medium" @command="handleCommand">
                 <span class="iconfont icon-user" style="font-size:25px;"></span>
                 <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item>欢迎回来, {{username}}</el-dropdown-item>
-                <el-dropdown-item divided>我的</el-dropdown-item>
-                <el-dropdown-item>修改密码</el-dropdown-item>
+                <el-dropdown-item>
+                    欢迎回来, {{username}}
+                    <div style="font-size: 10px;color: #b4b4b4; margin-top: -8px;">绑定邮箱：{{email}}</div>
+                </el-dropdown-item>
+                <el-dropdown-item divided command="modify">修改密码</el-dropdown-item>
                 <el-dropdown-item divided command="logout">注销</el-dropdown-item>
                 </el-dropdown-menu>
             </el-dropdown>
@@ -45,6 +47,7 @@ export default {
     data() {
         return {
             username: window.sessionStorage.username,
+            email: window.sessionStorage.email,
             searchValue: '',
             docList: [],
             show: false
@@ -55,8 +58,15 @@ export default {
             if(command === 'logout')
             {
                 window.sessionStorage.removeItem('username')
+                window.sessionStorage.removeItem('email')
                 this.$router.push({
                     path: '/'
+                })
+            }
+            if(command === 'modify')
+            {
+                this.$router.push({
+                    path: '/password-manage'
                 })
             }
         },

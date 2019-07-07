@@ -31,6 +31,7 @@ export default {
         }
     },
     mounted() {
+        (document.getElementById('loading')).style.display = "none"
         //消息返回为true弹出消息 消息为false转为404
         this.$axios(
         {
@@ -68,7 +69,9 @@ export default {
                     duration: 0,
                     showClose: true
                 })
-                window.sessionStorage.removeItem('username') //如果是当前页面跳转，先清除之前的用户信息
+                 //如果是当前页面跳转，先清除之前的用户信息
+                window.sessionStorage.removeItem('username')
+                window.sessionStorage.removeItem('email')
             } else
             {
                 this.$router.push({
@@ -135,6 +138,7 @@ export default {
                 if(response.data.message === 'success')
                 {
                     window.sessionStorage.setItem('username',this.login.username)
+                    window.sessionStorage.setItem('email', response.data.email)
                     this.$router.push({
                         path: '/document-manage'
                     })

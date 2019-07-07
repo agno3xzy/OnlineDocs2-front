@@ -365,6 +365,55 @@ export default {
                     message: '生成链接成功，已复制到您的剪切板上',
                     type: 'success'
                 })
+                this.$confirm('是否要给邀请用户发送邀请邮件?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$axios(
+                    {
+                        url:'/mail/send-invite',
+                        method:"post",
+                        data:{
+                            username: window.sessionStorage.username,
+                            invitelist: this.userList,
+                            invitelink: this.shareLink,
+                            privilege: auth,
+                        },
+                        transformRequest: [function (data) {
+                        // Do whatever you want to transform the data
+                        let ret = ''
+                        for (let it in data) {
+                        // 如果要发送中文 编码 
+                            ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+                        }
+                        return ret
+                        }],
+                        headers: {
+                            'Content-Type':'application/x-www-form-urlencoded'
+                        }
+                    }).catch(error => {
+                        console.log(error.message);
+                        this.$message.error('生成失败')
+                    })
+                    .then(response => {
+                        if(response.data.message === 'success')
+                        {
+                            this.$message({
+                                message: '发送邮件成功',
+                                type: 'success'
+                            })
+                        } else if(response.data.message === 'fail')
+                        {
+                            this.$message({
+                                message: '发送失败',
+                                type: 'error'
+                            })
+                        }
+                    });
+
+                }).catch(() => {        
+                });
                 },()=> {
                     //复制失败的处理
                 })
@@ -373,6 +422,7 @@ export default {
         }
     },
     mounted() {
+        (document.getElementById('loading')).style.display = "none"
         //与后端通讯 获取文件内容
         //axios
         this.$axios(
@@ -489,7 +539,7 @@ body {
 }
 .quill-editor {
     position:absolute;
-    left: 25%;
+    left: 20%;
     top: 20%;
     min-height: 200px;
     height: 400px;

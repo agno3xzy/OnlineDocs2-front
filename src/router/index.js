@@ -2,13 +2,13 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import index from '@/components/index'
 import register from '@/components/register'
+import password_manage from '@/components/password-manage'
 import document_manage from '@/components/document-manage'
 import document_explore from '@/components/document-explore'
 import document_edit from '@/components/document-edit'
 import document_history from '@/components/document-history'
 import inviteConfirm from '@/components/invite-confirm'
 import notfound from '@/components/notfound'
-import history from '@/components/history'
 Vue.use(Router)
 
 export default new Router({
@@ -22,6 +22,11 @@ export default new Router({
       path: '/register',
       name: 'regsiter',
       component: register
+    },
+    {
+      path: '/password-manage',
+      name: 'password-manage',
+      component: password_manage
     },
     {
       path: '/document-manage',
@@ -51,11 +56,6 @@ export default new Router({
       path: '/404',
       name: '404',
       component: notfound
-    },
-    {
-      path: '/history',
-      name: 'history',
-      component: history
     },
     {
       path: '*',

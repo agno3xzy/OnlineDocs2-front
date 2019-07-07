@@ -43,6 +43,7 @@ export default {
         }
     },
     mounted() {
+        (document.getElementById('loading')).style.display = "none"
         this.$refs.myQuillEditor.quill.enable(false)
         console.log(this.$route.query.timeStamp)
         console.log(this.$route.query.filePath)

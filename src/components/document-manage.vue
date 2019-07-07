@@ -140,6 +140,7 @@ export default {
     },
     components: { navmenu },
     mounted() {
+        (document.getElementById('loading')).style.display = "none"
         this.$axios(
         {
             url:'/document-manage/lastuse',
@@ -490,7 +491,7 @@ body {
 a{
     text-decoration: none;
     transition-property: color;
-    transition-duration: 1s;
+    transition-duration: 0.5s;
     transition-timing-function: ease-out;
     color:#A5A5A5;
     font-size:18px;
@@ -498,7 +499,7 @@ a{
 }
 a:hover {
     transition-property: color;
-    transition-duration: 1s;
+    transition-duration: 0.5s;
     transition-timing-function: ease-out;
     color: #555555;
 }

@@ -83,6 +83,7 @@ export default {
         }
     },
     mounted() {
+        (document.getElementById('loading')).style.display = "none"
         //与后端通讯 获取文件内容
         //axios
         this.$axios(

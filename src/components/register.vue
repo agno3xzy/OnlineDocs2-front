@@ -1,25 +1,26 @@
 <template>
 <div>
-    <div class="registerimg"></div>
+    <backgroundimg></backgroundimg>
     <div id="register_form">
-        <el-form :model="form" label-position="left" ref="userForm" :rules="rule" label-width="80px">
+        <span class="title">Online Docs</span>
+        <el-form :model="form" label-position="right" ref="userForm" size="mini" :rules="rule" label-width="80px">
             <el-form-item label="用户名" prop="username">
-                <el-input v-model="form.username"></el-input>
+                <el-input v-model="form.username" size="mini"></el-input>
             </el-form-item>
             <el-form-item label="密码" prop="password">
-                <el-input type="password" v-model="form.password"></el-input>
+                <el-input type="password" v-model="form.password" size="mini"></el-input>
             </el-form-item>
             <el-form-item label="确认密码" prop="confirmPassword">
-                <el-input type="password" v-model="form.confirmPassword"></el-input>
+                <el-input type="password" v-model="form.confirmPassword" size="mini"></el-input>
             </el-form-item>
             <el-form-item label="邮箱" prop="email">
-                <el-input v-model="form.email"></el-input>
+                <el-input v-model="form.email" size="mini"></el-input>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" @click="createUser" style="width:100px;">注册</el-button>
+                <el-button type="primary" round @click="createUser" style="width:150px;margin-top:10px;">注册</el-button>
             </el-form-item>
             <el-form-item>
-                <el-button type="text" @click="toLogin" style="margin-top:-10px;">已有账号？马上登陆</el-button>
+                <el-button type="text" @click="toLogin">已有账号？马上登陆</el-button>
             </el-form-item>
         </el-form>
     </div>
@@ -27,6 +28,7 @@
 </template>
 
 <script>
+import backgroundimg from './background-img'
 export default {
     name: 'register',
     data() {
@@ -121,6 +123,7 @@ export default {
             }
         }
     },
+    components: {backgroundimg},
     methods: {
         createUser() {
             this.$axios(
@@ -178,43 +181,31 @@ export default {
 </script>
 
 <style scoped>
-.registerimg {
-    background: url('../../static/image/login.png');
-    background-size: 100% 100%;
-    height: 100%;
-    position: fixed;
-    width: 100%;
-    min-width: 1400px;
-    min-height: 800px;
-    filter:contrast(70%);
-    opacity: 0;
-    animation: fadeIn 1s ease 0s 1;
-    animation-fill-mode: forwards;
+@import '../../static/css/keyframe.css';
+.el-form {
+    width: 250px;
+    position: relative;
+    margin-top: 30px;
+    margin-left: 10%;
+    margin-bottom: 40px;
+}
+.title {
+    display:inline-block;
+    margin-top:30px;
+    font-size: 25px;
+    font-weight: bold;
+    color: #4281f5;
 }
 #register_form {
     position: absolute;
-    left: 40%;
-    top: 30%;
-    width: 250px;
-}
-@keyframes fadeIn
-{
-    from {opacity: 0;}
-    to {opacity: 1;}
-}
-@-moz-keyframes fadeIn
-{
-    from {opacity: 0;}
-    to {opacity: 1;}
-}   
-@-webkit-keyframes fadeIn
-{
-    from {opacity: 0;}
-    to {opacity: 1;}
-}
-@-o-keyframes fadeIn
-{
-    from {opacity: 0;}
-    to {opacity: 1;}
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    width: 400px;
+    background-color: rgba(245,245,245,0.6);
+    border-radius: 5px;
+    opacity: 0;
+    animation: fadeIn 1s ease 0.5s 1;
+    animation-fill-mode: forwards;
 }
 </style>
