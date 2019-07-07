@@ -16,7 +16,7 @@
             max-height="500">
                 <el-table-column prop="docName" label="文档名" width="150" align="center"></el-table-column>
                 <el-table-column prop="owner" label="文档所有者" width="150" align="center"></el-table-column>
-                <el-table-column prop="lastUseTime" label="最近修改时间" width="150" align="center"></el-table-column>
+                <el-table-column prop="lastUseTime" label="最近修改时间" width="200" align="center"></el-table-column>
                 <el-table-column prop="auth" label="权限" width="150" align="center"></el-table-column>
                 <el-table-column label="操作" width="300" align="center">
                     <template slot-scope="scope">
@@ -43,7 +43,7 @@
             style="width: 100%;"
             max-height="500">
                 <el-table-column prop="docName" label="文档名" width="150" align="center"></el-table-column>
-                <el-table-column prop="lastUseTime" label="最近修改时间" width="150" align="center"></el-table-column>
+                <el-table-column prop="lastUseTime" label="最近修改时间" width="200" align="center"></el-table-column>
                 <el-table-column prop="shareAmount" label="共享人数" width="150" align="center"></el-table-column>
                 <el-table-column prop="userData" label="共享成员" width="300" align="center">
                     <template slot-scope="scope">
@@ -76,7 +76,7 @@
             max-height="500">
                 <el-table-column prop="docName" label="文档名" width="150" align="center"></el-table-column>
                 <el-table-column prop="owner" label="文档所有者" width="150" align="center"></el-table-column>
-                <el-table-column prop="lastUseTime" label="最近修改时间" width="150" align="center"></el-table-column>
+                <el-table-column prop="lastUseTime" label="最近修改时间" width="200" align="center"></el-table-column>
                 <el-table-column prop="auth" label="权限" width="150" align="center"></el-table-column>
                 <el-table-column label="操作" width="300" align="center">
                     <template slot-scope="scope">
@@ -510,12 +510,12 @@ a:hover {
     position: relative;
     top: 100px;
     left: 15%;
-    width: 1050px;
+    width: 1100px;
 }
 #lastuse-table,#invite-table {
     position: relative;
     top: 100px;
-    left: 20%;
-    width: 900px;
+    left: 15%;
+    width: 950px;
 }
 </style>

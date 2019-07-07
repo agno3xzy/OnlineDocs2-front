@@ -29,8 +29,5 @@ export default {
     min-width: 1400px;
     min-height: 800px;
     filter:contrast(70%);
-    opacity: 0; 
-    animation: fadeIn 1s ease 0s 1;
-    animation-fill-mode: forwards;
 }
 </style>
