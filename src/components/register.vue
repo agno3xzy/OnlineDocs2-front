@@ -104,7 +104,6 @@ export default {
                 callback();
             }
         };
-
         return {
             form: {
                 username: '',
