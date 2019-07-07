@@ -1,5 +1,6 @@
 <template>
 <div>
+    <div class="registerimg"></div>
     <div id="register_form">
         <el-form :model="form" label-position="left" ref="userForm" :rules="rule" label-width="80px">
             <el-form-item label="用户名" prop="username">
@@ -177,10 +178,43 @@ export default {
 </script>
 
 <style scoped>
+.registerimg {
+    background: url('../../static/image/login.png');
+    background-size: 100% 100%;
+    height: 100%;
+    position: fixed;
+    width: 100%;
+    min-width: 1400px;
+    min-height: 800px;
+    filter:contrast(70%);
+    opacity: 0;
+    animation: fadeIn 1s ease 0s 1;
+    animation-fill-mode: forwards;
+}
 #register_form {
     position: absolute;
     left: 40%;
     top: 30%;
     width: 250px;
+}
+@keyframes fadeIn
+{
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+@-moz-keyframes fadeIn
+{
+    from {opacity: 0;}
+    to {opacity: 1;}
+}   
+@-webkit-keyframes fadeIn
+{
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+@-o-keyframes fadeIn
+{
+    from {opacity: 0;}
+    to {opacity: 1;}
 }
 </style>
