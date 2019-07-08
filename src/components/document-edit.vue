@@ -428,7 +428,7 @@ export default {
             this.shareDialogVisible = false
         },
         initWebSocket(){ //初始化weosocket
-            const wsuri = "ws://localhost:8080/socketServer?username=" + window.sessionStorage.username;
+            const wsuri = "ws://localhost:8080/socketServer?username=" + window.sessionStorage.username + "&docName=" + this.docName + ".txt";
             this.websock = new WebSocket(wsuri);
             this.websock.onmessage = this.websocketonmessage;
             this.websock.onopen = this.websocketonopen;
@@ -453,9 +453,6 @@ export default {
         websocketclose(e){  //关闭
             console.log('断开连接',e);
         },
-    },
-    created() {
-        this.initWebSocket();
     },
     mounted() {
         (document.getElementById('loading')).style.display = "none"
@@ -505,6 +502,7 @@ export default {
                 this.userString = userString
             }
             loadHistoryFlag = true //每次进入页面需要加载历史记录
+            this.initWebSocket()
             this.timer = setInterval(this.timeUpdate, 3000)
         });
     },
