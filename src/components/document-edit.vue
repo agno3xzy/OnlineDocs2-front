@@ -68,7 +68,7 @@ import '../assets/myicon/iconfont.css'
 import navmenu from './nav-menu'
 import { diff_match_patch } from '../../static/js/diff_match_patch'
 import { update,CurentTime,replaceAll } from '../../static/js/DiffToStringArray'
-import { setTimeout, clearTimeout } from 'timers';
+import { setTimeout, clearTimeout, setInterval, clearInterval } from 'timers';
 var content, new_content
 var pos //设置光标位置
 var loadHistoryFlag = true //记录是否需要从后端获取历史版本
@@ -215,7 +215,7 @@ export default {
                 // content = new_content
                 await this.changeData(response.data.content)
                 this.$refs.myQuillEditor.quill.setSelection(pos)
-                this.timer = setTimeout(this.timeUpdate,3000)
+                //this.timer = setTimeout(this.timeUpdate,3000)
             });
         },
         async changeData(response_content)
@@ -340,7 +340,7 @@ export default {
                 data:{
                     userList: this.userList,
                     authority: auth,
-                    docName: this.docName+'.txt'
+                    filePath: this.$store.state.doc.oldPath
                 },
                 transformRequest: [function (data) {
                 // Do whatever you want to transform the data
@@ -469,11 +469,11 @@ export default {
                 this.userString = userString
             }
             loadHistoryFlag = true //每次进入页面需要加载历史记录
-            this.timer = setTimeout(this.timeUpdate,3000)
+            this.timer = setInterval(this.timeUpdate,3000)
         });
     },
     beforeDestroy() {
-        clearTimeout(this.timer)
+        clearInterval(this.timer)
     }
 }
 </script>

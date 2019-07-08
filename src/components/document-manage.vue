@@ -112,6 +112,7 @@
             <i class="el-icon-upload"></i>
             <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
             </el-upload>
+            <el-progress :percentage="progress" id="progress-bar"></el-progress>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="uploadDialogVisible = false">取 消</el-button>
                 <el-button type="primary" @click="uploadFile">提 交</el-button>
@@ -135,7 +136,9 @@ export default {
             createTableData: [{docName:'111',lastUseTime:'2019-1-1',shareAmount:10,userData:[{username:'aaaaaaa'},{username:'aaaaaaa'},{username:'aaaaaaa'},{username:'aaaaaaa'},{username:'aaaaaaa'},{username:'aaaaaaa'},{username:'aaaaaaa'},{username:'aaaaaaa'},{username:'aaaaaaa'},]}],
             inviteTableData: [],
             uploadDialogVisible: false,
-            fileList: []
+            fileList: [],
+            progress: 0, //进度条显示
+            isSuccess: false
         }
     },
     components: { navmenu },
@@ -214,7 +217,7 @@ export default {
                     {
                         var docItem = response.data.docList[i]
                         docList.push(docItem)
-                        this.lastUseTableData.push({docName:docItem.docName,owner:docItem.owner,lastUseTime:convertTimeFormat(docItem.lastUseTime),auth:docItem.auth})
+                        this.$set(this.lastUseTableData,0,{docName:docItem.docName,owner:docItem.owner,lastUseTime:convertTimeFormat(docItem.lastUseTime),auth:docItem.auth})
                     }
                     return (response)
                 });
@@ -410,43 +413,53 @@ export default {
         },
         handleFile(response) {
             this.fileList.push(response.file)
-        },
-        uploadFile() {
-            console.log(this.fileList)
-            this.reload()
             let formData = new FormData()
+            var config = {
+                onUploadProgress: progressEvent => {
+                    var complete = (progressEvent.loaded / progressEvent.total * 100 | 0)
+                    this.progress = complete
+                }
+            }
             formData.append('username',window.sessionStorage.username)
             formData.append('file', this.fileList[0])
             formData.append('fileUploadFileName',this.fileList[0].name)
-            this.$axios.post('/upload', formData)
+            this.$axios.post('/upload', formData, config)
                 .then(response => {
                     if(response.data.message === 'success')
                     {
-                        this.$message({
-                            message: '上传成功',
-                            type: 'success',
-                            duration: 2000
-                        })
-                        setTimeout(() => {
-                            this.reload()
-                        },1000)
+                        this.isSuccess = true
                     } else if(response.data.message === 'fail')
                     {
-                        this.$message({
-                            message: '上传失败，请重试',
-                            type: 'error',
-                            duration: 2000
-                        })
+                        this.isSuccess = false
                     }
                 })
                 .catch(function(error) {
                     console.log(error)
                 })
+        },
+        uploadFile() {
+            console.log(this.fileList)
+            if(this.isSuccess)
+            {
+                this.$message({
+                    message: '上传成功',
+                    type: 'success',
+                    duration: 2000
+                })
+            } else
+            {
+                this.$message({
+                    message: '上传失败，请重试',
+                    type: 'error',
+                    duration: 2000
+                })
+            }
             this.uploadDialogVisible = false
             for(var i = this.fileList.length-1; i >= 0; i--)
             {
                 this.$delete(this.fileList, i);
             }
+            this.reload()
         },
         generateType(index) {
             if(index % 5 === 0) {
@@ -517,5 +530,10 @@ a:hover {
     top: 100px;
     left: 15%;
     width: 950px;
+}
+#progress-bar {
+    width: 52%;
+    left: 25%;
+    margin-top: 30px;
 }
 </style>
