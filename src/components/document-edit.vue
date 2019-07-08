@@ -225,7 +225,7 @@ export default {
             //     this.$refs.myQuillEditor.quill.setSelection(pos)
             // });
         },
-        async changeData(response_content)
+        changeData(response_content)
         {
             this.$refs.myQuillEditor.quill.deleteText(0,this.content.length)
             this.$refs.myQuillEditor.quill.insertText(0,response_content)
@@ -436,13 +436,16 @@ export default {
             this.websock.onclose = this.websocketclose;
         },
         websocketonopen(){ //连接建立之后执行send方法发送数据
-            this.websocketsend("success");
+            //this.websocketsend("success");
         },
         websocketonerror(){//连接建立失败重连
             this.initWebSocket();
         },
         websocketonmessage(e){ //数据接收
-            console.log(e)
+            var data = JSON.parse(e.data)
+            console.log(data.content)
+            this.changeData(data.content)
+            this.$refs.myQuillEditor.quill.setSelection(pos)
         },
         websocketsend(Data){//数据发送
             this.websock.send(Data);
