@@ -112,7 +112,7 @@
             <i class="el-icon-upload"></i>
             <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
             </el-upload>
-            <el-progress :percentage="progress" id="progress-bar"></el-progress>
+            <el-progress :percentage=progress id="progress-bar"></el-progress>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="uploadDialogVisible = false">取 消</el-button>
                 <el-button type="primary" @click="uploadFile">提 交</el-button>
@@ -217,7 +217,7 @@ export default {
                     {
                         var docItem = response.data.docList[i]
                         docList.push(docItem)
-                        this.$set(this.lastUseTableData,0,{docName:docItem.docName,owner:docItem.owner,lastUseTime:convertTimeFormat(docItem.lastUseTime),auth:docItem.auth})
+                        this.$set(this.lastUseTableData,i,{docName:docItem.docName,owner:docItem.owner,lastUseTime:convertTimeFormat(docItem.lastUseTime),auth:docItem.auth})
                     }
                     return (response)
                 });
@@ -414,20 +414,25 @@ export default {
         handleFile(response) {
             this.fileList.push(response.file)
             let formData = new FormData()
-            var config = {
-                onUploadProgress: progressEvent => {
-                    var complete = (progressEvent.loaded / progressEvent.total * 100 | 0)
-                    this.progress = complete
-                }
-            }
+            // var config = {
+            //     onUploadProgress: progressEvent => {
+            //         if(progressEvent.lengthComputable)
+            //         {
+            //             var complete = (progressEvent.loaded / progressEvent.total * 50).toFixed(0)
+            //             console.log(complete)
+            //             this.progress = parseInt(complete)
+            //         }
+            //     }
+            // }
             formData.append('username',window.sessionStorage.username)
             formData.append('file', this.fileList[0])
             formData.append('fileUploadFileName',this.fileList[0].name)
-            this.$axios.post('/upload', formData, config)
+            this.$axios.post('/upload', formData)
                 .then(response => {
                     if(response.data.message === 'success')
                     {
                         this.isSuccess = true
+                        this.progress = 100
                     } else if(response.data.message === 'fail')
                     {
                         this.isSuccess = false

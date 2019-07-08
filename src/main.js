@@ -21,7 +21,6 @@ axios.defaults.baseURL = process.env.BASE_API;
 Vue.use(ElementUI)
 Vue.use(VueQuillEditor, /* { default global options } */)
 Vue.use(VueClipboard)
-
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

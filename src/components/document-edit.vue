@@ -76,6 +76,7 @@ export default {
     name: 'document-edit',
     data() {
         return {
+            websock: null,
             docName: '',
             docID: '',
             docOwner: '',
@@ -184,39 +185,45 @@ export default {
             var opList = (update(diff))
             console.log(opList)
             console.log("diff:",diff)
-            this.$axios(
+            if(opList) //如果有不同的改变，则与后端通信
             {
-                url:'/conflictHandle',
-                method:"post",
-                data:{
-                    opList: opList,
-                    newPath: this.$store.state.doc.newPath,
-                    oldPath: this.$store.state.doc.oldPath,
-                    username: window.sessionStorage.username,
-                    timeStamp: CurentTime()
-                },
-                transformRequest: [function (data) {
-                // Do whatever you want to transform the data
-                let ret = ''
-                for (let it in data) {
-                // 如果要发送中文 编码 
-                    ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
-                }
-                return ret
-                }],
-                headers: {
-                    'Content-Type':'application/x-www-form-urlencoded'
-                }
-            }).catch(error => {
-                console.log(error.message);
-            })
-            .then(async response => {
-                // this.content = response.data.content
-                // content = new_content
-                await this.changeData(response.data.content)
-                this.$refs.myQuillEditor.quill.setSelection(pos)
-                //this.timer = setTimeout(this.timeUpdate,3000)
-            });
+                console.log('与后端进行通信')
+                //let data = {'newPath': this.$store.state.doc.newPath}
+                let data = {"opList":opList,"newPath": this.$store.state.doc.newPath,"oldPath": this.$store.state.doc.oldPath,"username": window.sessionStorage.username,"timeStamp": CurentTime()}
+                this.websocketsend(JSON.stringify(data))
+            }
+            // this.$axios(
+            // {
+            //     url:'/conflictHandle',
+            //     method:"post",
+            //     data:{
+            //         opList: opList,
+            //         newPath: this.$store.state.doc.newPath,
+            //         oldPath: this.$store.state.doc.oldPath,
+            //         username: window.sessionStorage.username,
+            //         timeStamp: CurentTime()
+            //     },
+            //     transformRequest: [function (data) {
+            //     // Do whatever you want to transform the data
+            //     let ret = ''
+            //     for (let it in data) {
+            //     // 如果要发送中文 编码 
+            //         ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+            //     }
+            //     return ret
+            //     }],
+            //     headers: {
+            //         'Content-Type':'application/x-www-form-urlencoded'
+            //     }
+            // }).catch(error => {
+            //     console.log(error.message);
+            // })
+            // .then(async response => {
+            //     // this.content = response.data.content
+            //     // content = new_content
+            //     await this.changeData(response.data.content)
+            //     this.$refs.myQuillEditor.quill.setSelection(pos)
+            // });
         },
         async changeData(response_content)
         {
@@ -419,7 +426,33 @@ export default {
                 })
             });
             this.shareDialogVisible = false
-        }
+        },
+        initWebSocket(){ //初始化weosocket
+            const wsuri = "ws://localhost:8080/socketServer?username=" + window.sessionStorage.username;
+            this.websock = new WebSocket(wsuri);
+            this.websock.onmessage = this.websocketonmessage;
+            this.websock.onopen = this.websocketonopen;
+            this.websock.onerror = this.websocketonerror;
+            this.websock.onclose = this.websocketclose;
+        },
+        websocketonopen(){ //连接建立之后执行send方法发送数据
+            this.websocketsend("success");
+        },
+        websocketonerror(){//连接建立失败重连
+            this.initWebSocket();
+        },
+        websocketonmessage(e){ //数据接收
+            console.log(e)
+        },
+        websocketsend(Data){//数据发送
+            this.websock.send(Data);
+        },
+        websocketclose(e){  //关闭
+            console.log('断开连接',e);
+        },
+    },
+    created() {
+        this.initWebSocket();
     },
     mounted() {
         (document.getElementById('loading')).style.display = "none"
@@ -469,12 +502,15 @@ export default {
                 this.userString = userString
             }
             loadHistoryFlag = true //每次进入页面需要加载历史记录
-            this.timer = setInterval(this.timeUpdate,3000)
+            this.timer = setInterval(this.timeUpdate, 3000)
         });
     },
     beforeDestroy() {
         clearInterval(this.timer)
-    }
+    },
+    destroyed() {
+        this.websock.close()
+    },
 }
 </script>
 
