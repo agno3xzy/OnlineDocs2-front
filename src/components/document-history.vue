@@ -76,21 +76,6 @@ export default {
             this.docName = this.$route.query.docName
             this.timestamp = this.$route.query.timeStamp
             await this.changeContent(response.data.content)
-            for(var i = 0; i < this.userOptions.length; i++)
-            {
-                this.$refs['userblock'][i].style.backgroundColor = this.userOptions[i].color
-            }
-            for(var time in response.data.editLog)
-            {
-                var opList = response.data.editLog[time] //存放的用户原子操作 格式： 插入/删除 行数 位置 内容 是否完全 操作用户
-                for(var i = 0; i < opList.length; i = i + 6)
-                {
-                    if(opList[i] === 'ins') //说明是插入操作
-                    {
-                        this.$refs.myQuillEditor.quill.insertText(0,content)
-                    }
-                }
-            }
             this.$refs.myQuillEditor.quill.enable(false)
         });
     },

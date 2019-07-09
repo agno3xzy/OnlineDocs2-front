@@ -54,46 +54,46 @@ export default {
             this.$router.push({
                 path: '/document-manage'
             })
-        }
-    },
-    changeData(response_content)
-    {
-        this.$refs.myQuillEditor.quill.deleteText(0,this.content.length)
-        this.$refs.myQuillEditor.quill.insertText(0,response_content)
-        // console.log('改变前:')
-        // console.log('content:',content)
-        // console.log('new_content:',new_content)
-        content = this.content
-        new_content = this.content
-        // console.log('改变后:')
-        // console.log('content:',content)
-        // console.log('new_content:',new_content)
-    },
-    initWebSocket(){ //初始化weosocket
-        const wsuri = "ws://localhost:8080/socketServer?username=" + window.sessionStorage.username + "&docName=" + this.docName + ".txt" + "&docOwner=" + this.docOwner;
-        this.websock = new WebSocket(wsuri);
-        this.websock.onmessage = this.websocketonmessage;
-        this.websock.onopen = this.websocketonopen;
-        this.websock.onerror = this.websocketonerror;
-        this.websock.onclose = this.websocketclose;
-    },
-    websocketonopen(){ //连接建立之后执行send方法发送数据
-        //this.websocketsend("success");
-    },
-    websocketonerror(){//连接建立失败重连
-        this.initWebSocket();
-    },
-    websocketonmessage(e){ //数据接收
-        var data = JSON.parse(e.data)
-        console.log(data.content)
-        this.changeData(data.content)
-        this.$refs.myQuillEditor.quill.setSelection(pos)
-    },
-    websocketsend(Data){//数据发送
-        this.websock.send(Data);
-    },
-    websocketclose(e){  //关闭
-        console.log('断开连接',e);
+        },
+        changeData(response_content)
+        {
+            this.$refs.myQuillEditor.quill.deleteText(0,this.content.length)
+            this.$refs.myQuillEditor.quill.insertText(0,response_content)
+            // console.log('改变前:')
+            // console.log('content:',content)
+            // console.log('new_content:',new_content)
+            content = this.content
+            new_content = this.content
+            // console.log('改变后:')
+            // console.log('content:',content)
+            // console.log('new_content:',new_content)
+        },
+        initWebSocket(){ //初始化weosocket
+            const wsuri = "ws://localhost:8080/socketServer?username=" + window.sessionStorage.username + "&docName=" + this.docName + ".txt" + "&docOwner=" + this.docOwner;
+            this.websock = new WebSocket(wsuri);
+            this.websock.onmessage = this.websocketonmessage;
+            this.websock.onopen = this.websocketonopen;
+            this.websock.onerror = this.websocketonerror;
+            this.websock.onclose = this.websocketclose;
+        },
+        websocketonopen(){ //连接建立之后执行send方法发送数据
+            //this.websocketsend("success");
+        },
+        websocketonerror(){//连接建立失败重连
+            this.initWebSocket();
+        },
+        websocketonmessage(e){ //数据接收
+            var data = JSON.parse(e.data)
+            console.log(data.content)
+            this.changeData(data.content)
+            this.$refs.myQuillEditor.quill.setSelection(pos)
+        },
+        websocketsend(Data){//数据发送
+            this.websock.send(Data);
+        },
+        websocketclose(e){  //关闭
+            console.log('断开连接',e);
+        },
     },
     mounted() {
         (document.getElementById('loading')).style.display = "none"
