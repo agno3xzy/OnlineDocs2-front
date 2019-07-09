@@ -167,6 +167,7 @@ export default {
             console.log(error.message);
         })
         .then(response => {
+            docList.length = 0
             for(var i = 0; i < response.data.docList.length; i++)
             {
                 var docItem = response.data.docList[i]
@@ -321,9 +322,7 @@ export default {
         handleExplore(index, row) {
             console.log(index, row)
             console.log(docList)
-            var docName = row.docName
-            var docIndex = this.searchIndex(docName)
-            this.$store.commit('setFilePath', {oldPath:docList[docIndex].oldPath, newPath:docList[docIndex].newPath})
+            this.$store.commit('setFilePath', {oldPath:docList[index].oldPath, newPath:docList[index].newPath})
             this.$router.push({
                 path: '/document-explore'
             })
@@ -331,9 +330,7 @@ export default {
         handleEdit(index, row) {
             console.log(index, row)
             console.log(docList)
-            var docName = row.docName
-            var docIndex = this.searchIndex(docName)
-            this.$store.commit('setFilePath', {oldPath:docList[docIndex].oldPath, newPath:docList[docIndex].newPath})
+            this.$store.commit('setFilePath', {oldPath:docList[index].oldPath, newPath:docList[index].newPath})
             this.$router.push({
                 path: '/document-edit'
             })
@@ -341,15 +338,13 @@ export default {
         handleDelete(index, row) {
             console.log(index, row)
             console.log(docList)
-            var docName = row.docName
-            var docIndex = this.searchIndex(docName)
             this.$axios(
             {
                 url:'/delete',
                 method:"post", 
                 data:{
-                    oldPath: docList[docIndex].oldPath,
-                    newPath: docList[docIndex].newPath
+                    oldPath: docList[index].oldPath,
+                    newPath: docList[index].newPath
                 },
                 transformRequest: [function (data) {
                 // Do whatever you want to transform the data
@@ -387,14 +382,12 @@ export default {
             });
         },
         handleDownload(index, row) {
-            var docName = row.docName
-            var docIndex = this.searchIndex(docName)
             this.$axios(
             {
                 url:'/download',
                 method:"post",
                 data:{
-                    path: docList[docIndex].oldPath,
+                    path: docList[index].oldPath,
                 },
                 transformRequest: [function (data) {
                 // Do whatever you want to transform the data
