@@ -125,50 +125,56 @@ export default {
     components: {backgroundimg},
     methods: {
         createUser() {
-            this.$axios(
-            {
-                url:'/register/create',
-                method:"post",
-                data:{
-                    username: this.form.username,
-                    password: this.form.password,
-                    email: this.form.email
-                },
-                transformRequest: [function (data) {
-                // Do whatever you want to transform the data
-                let ret = ''
-                for (let it in data) {
-                // 如果要发送中文 编码 
-                    ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
-                }
-                return ret
-                }],
-                headers: {
-                    'Content-Type':'application/x-www-form-urlencoded'
-                }
-            }).catch(error => {
-                console.log(error.message);
-            })
-            .then(response => {
-                if(response.data.isValidate === 'true')
+            this.$refs['userForm'].validate((valid) => {
+                if(valid)
                 {
-                    this.$message({
-                        type: 'success',
-                        message: '注册成功,返回登陆页面',
-                        duration: 2000
+                    this.$axios(
+                    {
+                        url:'/register/create',
+                        method:"post",
+                        data:{
+                            username: this.form.username,
+                            password: this.form.password,
+                            email: this.form.email
+                        },
+                        transformRequest: [function (data) {
+                        // Do whatever you want to transform the data
+                        let ret = ''
+                        for (let it in data) {
+                        // 如果要发送中文 编码 
+                            ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+                        }
+                        return ret
+                        }],
+                        headers: {
+                            'Content-Type':'application/x-www-form-urlencoded'
+                        }
+                    }).catch(error => {
+                        console.log(error.message);
                     })
-                    this.$router.push({
-                        path: '/'
-                    })
-                } else
-                {
-                    this.$message({
-                        type: 'error',
-                        message: '注册失败，请重试',
-                        duration: 2000
-                    })
+                    .then(response => {
+                        if(response.data.isValidate === 'true')
+                        {
+                            this.$message({
+                                type: 'success',
+                                message: '注册成功,返回登陆页面',
+                                duration: 2000
+                            })
+                            this.$router.push({
+                                path: '/'
+                            })
+                        } else
+                        {
+                            this.$message({
+                                type: 'error',
+                                message: '注册失败，请重试',
+                                duration: 2000
+                            })
+                        }
+                    });
                 }
             });
+            
         },
         toLogin() {
             this.$router.push({

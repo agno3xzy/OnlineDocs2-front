@@ -334,6 +334,20 @@ export default {
             {
                 auth = 'read'
             }
+            var templist = this.userList.sort()
+            var duplicateFlag = false
+            for(var i = 0; i < templist.length - 1; i++)
+            {
+                if(templist[i] === templist[i+1])
+                {
+                    duplicateFlag = true
+                }
+            }
+            if(duplicateFlag)
+            {
+                this.$message.error('不要重复邀请同一个人')
+                return 
+            }
             //与后端交互分享文件
             this.$axios(
             {

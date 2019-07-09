@@ -81,48 +81,54 @@ export default {
     components: {backgroundimg},
     methods: {
         changePassword() {
-            this.$axios(
-            {
-                url:'/modifyKey',
-                method:"post",
-                data:{
-                    username: window.sessionStorage.username,
-                    oldPassword: this.form.oldPassword,
-                    newPassword: this.form.newPassword
-                },
-                transformRequest: [function (data) {
-                // Do whatever you want to transform the data
-                let ret = ''
-                for (let it in data) {
-                // 如果要发送中文 编码 
-                    ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+            this.$refs['passwordForm'].validate((valid) => {
+                if(valid)
+                {
+                    this.$axios(
+                    {
+                        url:'/modifyKey',
+                        method:"post",
+                        data:{
+                            username: window.sessionStorage.username,
+                            oldPassword: this.form.oldPassword,
+                            newPassword: this.form.newPassword
+                        },
+                        transformRequest: [function (data) {
+                        // Do whatever you want to transform the data
+                        let ret = ''
+                        for (let it in data) {
+                        // 如果要发送中文 编码 
+                            ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+                        }
+                        return ret
+                        }],
+                        headers: {
+                            'Content-Type':'application/x-www-form-urlencoded'
+                        }
+                    }).catch(error => {
+                        console.log(error.message);
+                    })
+                    .then(response => {
+                        if(response.data.message === 'success')
+                        {
+                            this.$message({
+                                message: '修改成功',
+                                type: 'success'
+                            })
+                            this.$router.push({
+                                path: '/document-manage'
+                            })
+                        } else if(response.data.message === 'fail')
+                        {
+                            this.$message({
+                                message: '密码错误，请重试',
+                                type: 'error'
+                            })
+                        }
+                    });
                 }
-                return ret
-                }],
-                headers: {
-                    'Content-Type':'application/x-www-form-urlencoded'
-                }
-            }).catch(error => {
-                console.log(error.message);
             })
-            .then(response => {
-                if(response.data.message === 'success')
-                {
-                    this.$message({
-                        message: '修改成功',
-                        type: 'success'
-                    })
-                    this.$router.push({
-                        path: '/document-manage'
-                    })
-                } else if(response.data.message === 'fail')
-                {
-                    this.$message({
-                        message: '密码错误，请重试',
-                        type: 'error'
-                    })
-                }
-            });
+            
         },
         toDocumentManage() {
             this.$router.push({
