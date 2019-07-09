@@ -3,8 +3,8 @@
     <navmenu></navmenu>
     <div id="editor">
         <div id="history-menu" @mouseenter="showChange" @mouseleave="showChange" v-bind:class="{ visibleMenu: show, hiddenMenu:!show }" align="center">
-            <span v-show="!showItem" class="iconfont icon-arrow-right" style="position:absolute;right:5%;top:45%;font-size:30px;"></span>
-            <span v-show="showItem" class="iconfont icon-arrow-left" style="position:absolute;right:5%;top:45%;font-size:30px;"></span>
+            <span v-show="!showItem" class="iconfont icon-right-circle" style="position:absolute;right:5%;top:45%;font-size:30px;"></span>
+            <span v-show="showItem" class="iconfont icon-left-circle" style="position:absolute;right:5%;top:45%;font-size:30px;"></span>
             <div v-bind:class="{ visibleItem: showItem, hiddenItem:!showItem }">
                 <span style="margin-top:10px;display:inline-block">目前历史版本：</span>
                 <div class="history-item" v-for="(val,index) in historyOptions" ref="block" v-bind:key="'historyItem'+index" style="margin-top:20px;">
@@ -71,7 +71,6 @@ import { update,CurentTime,replaceAll } from '../../static/js/DiffToStringArray'
 import { setTimeout, clearTimeout, setInterval, clearInterval } from 'timers';
 var content, new_content
 var pos //设置光标位置
-var loadHistoryFlag = true //记录是否需要从后端获取历史版本
 export default {
     name: 'document-edit',
     data() {
@@ -114,40 +113,36 @@ export default {
             this.show = !this.show
             this.showItem = !this.showItem
             //判断是否需要重新从后端发取信息
-            if(loadHistoryFlag)
+            this.$axios(
             {
-                this.$axios(
+                url:'/version-manage/show',
+                method:"post",
+                data:{
+                    username: window.sessionStorage.username,
+                    filepath: this.$store.state.doc.oldPath
+                },
+                transformRequest: [function (data) {
+                // Do whatever you want to transform the data
+                let ret = ''
+                for (let it in data) {
+                // 如果要发送中文 编码 
+                    ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+                }
+                return ret
+                }],
+                headers: {
+                    'Content-Type':'application/x-www-form-urlencoded'
+                }
+            }).catch(error => {
+                console.log(error.message);
+            })
+            .then(async response => {
+                await this.changeHistoryOptions(response.data.versionItem)
+                for(var i = 0; i < this.historyOptions.length; i++)
                 {
-                    url:'/version-manage/show',
-                    method:"post",
-                    data:{
-                        username: window.sessionStorage.username,
-                        filepath: this.$store.state.doc.oldPath
-                    },
-                    transformRequest: [function (data) {
-                    // Do whatever you want to transform the data
-                    let ret = ''
-                    for (let it in data) {
-                    // 如果要发送中文 编码 
-                        ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
-                    }
-                    return ret
-                    }],
-                    headers: {
-                        'Content-Type':'application/x-www-form-urlencoded'
-                    }
-                }).catch(error => {
-                    console.log(error.message);
-                })
-                .then(async response => {
-                    await this.changeHistoryOptions(response.data.versionItem)
-                    for(var i = 0; i < this.historyOptions.length; i++)
-                    {
-                        this.$refs['block'][i].style.backgroundColor = this.historyOptions[i].color
-                    }
-                });
-                loadHistoryFlag = false
-            }
+                    this.$refs['block'][i].style.backgroundColor = this.historyOptions[i].color
+                }
+            });
         },
         async changeHistoryOptions(versionItem) 
         {
@@ -232,7 +227,8 @@ export default {
             // console.log('改变前:')
             // console.log('content:',content)
             // console.log('new_content:',new_content)
-            content = new_content
+            content = this.content
+            new_content = this.content
             // console.log('改变后:')
             // console.log('content:',content)
             // console.log('new_content:',new_content)
@@ -269,7 +265,6 @@ export default {
                         type: 'success',
                         duration: 2000
                     }) 
-                    loadHistoryFlag = true //由于生成了新的历史版本 所以需要重新从后端获取
                 } else if(response.data.message === 'fail')
                 {
                     this.$message({
@@ -501,7 +496,6 @@ export default {
             {
                 this.userString = userString
             }
-            loadHistoryFlag = true //每次进入页面需要加载历史记录
             this.initWebSocket()
             this.timer = setInterval(this.timeUpdate, 3000)
         });

@@ -1,5 +1,6 @@
 <template>
     <div>
+        <backgroundimg></backgroundimg>
         <div class="header" align="center">
             OnlineDocs
         </div>
@@ -20,6 +21,7 @@
 </template>
 
 <script>
+import backgroundimg from './background-img'
 export default {
     name: 'invite-confirm',
     data() {
@@ -145,18 +147,33 @@ export default {
                 }
             });
         }
-    }
+    },
+    components: { backgroundimg }
     
 }
 </script>
 
 <style scoped>
+@import '../../static/css/keyframe.css';
 .header {
+    position: absolute;
     font-size:40px;
     font-weight: bold;
-    margin-top:200px;
+    left: 50%;
+    top: 25%;
+    opacity: 0;
+    transform: translate(-50%, -25%);
+    animation: fadeIn 2s ease 0.5s 1;
+    animation-fill-mode: forwards;
 }
 .main {
-    margin-top:50px;
+    position: absolute;
+    left: 50%;
+    top: 45%;
+    opacity: 0;
+    transform: translate(-50%, -30%);
+    animation: fadeIn 2s ease 1s 1;
+    animation-fill-mode: forwards;
+
 }
 </style>

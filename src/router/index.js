@@ -16,46 +16,46 @@ export default new Router({
     {
       path: '/',
       name: 'index',
-      component: index
+      component: resolve => require(['../components/index.vue'], resolve)
     },
     {
       path: '/register',
       name: 'regsiter',
-      component: register
+      component: resolve => require(['../components/register.vue'], resolve)
     },
     {
       path: '/password-manage',
       name: 'password-manage',
-      component: password_manage
+      component: resolve => require(['../components/password-manage.vue'], resolve)
     },
     {
       path: '/document-manage',
       name: 'document-manage',
-      component: document_manage
+      component: resolve => require(['../components/document-manage.vue'], resolve)
     },
     {
       path: '/document-explore',
       name: 'document-explore',
-      component: document_explore
+      component: resolve => require(['../components/document-explore.vue'], resolve)
     },
     {
       path: '/document-edit',
       name: 'document-edit',
-      component: document_edit
+      component: resolve => require(['../components/document-edit.vue'], resolve)
     },
     {
       path: '/document-history',
       name: 'document-history',
-      component: document_history
+      component: resolve => require(['../components/document-history.vue'], resolve)
     },
     {
       path: '/inviteConfirm/:docId/:auth',
-      component: inviteConfirm
+      component: resolve => require(['../components/invite-confirm.vue'], resolve)
     },
     {
       path: '/404',
       name: '404',
-      component: notfound
+      component: resolve => require(['../components/notfound.vue'], resolve)
     },
     {
       path: '*',
