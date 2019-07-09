@@ -423,7 +423,7 @@ export default {
             this.shareDialogVisible = false
         },
         initWebSocket(){ //初始化weosocket
-            const wsuri = "ws://localhost:8080/socketServer?username=" + window.sessionStorage.username + "&docName=" + this.docName + ".txt";
+            const wsuri = "ws://localhost:8080/socketServer?username=" + window.sessionStorage.username + "&docName=" + this.docName + ".txt" + "&docOwner=" + this.docOwner;
             this.websock = new WebSocket(wsuri);
             this.websock.onmessage = this.websocketonmessage;
             this.websock.onopen = this.websocketonopen;

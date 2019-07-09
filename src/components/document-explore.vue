@@ -3,7 +3,10 @@
     <navmenu></navmenu>
     <div id="editor">
         <div id="title-group" align="left">
-            <el-button type="text" icon="el-icon-arrow-left" style="font-size:20px;color:black;" @click="toDocumentManage">返回</el-button>
+            <el-button type="text" icon="el-icon-arrow-left" style="font-size:20px;color:black;margin-left:20px;" @click="toDocumentManage">返回</el-button>
+            <el-tag style="margin-left:30px;">文档：{{docName}}</el-tag>
+            <el-tag type="success" style="margin-left:10px;">文档所有者：{{docOwner}}</el-tag>
+            <el-tag type="warning" style="margin-left:10px;">共享成员：{{userString}}</el-tag>       
         </div>
         <quill-editor
             v-model="content"
@@ -22,7 +25,10 @@ export default {
     data() {
         return {
             docName: '',
+            docID: '',
+            docOwner: '',
             content: '',
+            userString: '',
             editorOption: { 
                 placeholder: "输入任何内容，支持html",
                 modules: {  
@@ -43,44 +49,51 @@ export default {
     },
     components: {navmenu},
     methods: {
-        timeUpdate() {
-            this.$axios(
-            {
-                url:'/conflictHandle',
-                method:"post",
-                data:{
-                    opList: [],
-                    newPath: this.$store.state.doc.newPath,
-                    oldPath: this.$store.state.doc.oldPath,
-                    username: window.sessionStorage.username,
-                    timeStamp: CurentTime()
-                },
-                transformRequest: [function (data) {
-                // Do whatever you want to transform the data
-                let ret = ''
-                for (let it in data) {
-                // 如果要发送中文 编码 
-                    ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
-                }
-                return ret
-                }],
-                headers: {
-                    'Content-Type':'application/x-www-form-urlencoded'
-                }
-            }).catch(error => {
-                console.log(error.message);
-            })
-            .then(response => {
-                this.$refs.myQuillEditor.quill.deleteText(0,this.content.length)
-                this.$refs.myQuillEditor.quill.insertText(0,response.data.content)
-            });
-        },
         toDocumentManage() {
             this.$store.commit('removeFilePath')
             this.$router.push({
                 path: '/document-manage'
             })
         }
+    },
+    changeData(response_content)
+    {
+        this.$refs.myQuillEditor.quill.deleteText(0,this.content.length)
+        this.$refs.myQuillEditor.quill.insertText(0,response_content)
+        // console.log('改变前:')
+        // console.log('content:',content)
+        // console.log('new_content:',new_content)
+        content = this.content
+        new_content = this.content
+        // console.log('改变后:')
+        // console.log('content:',content)
+        // console.log('new_content:',new_content)
+    },
+    initWebSocket(){ //初始化weosocket
+        const wsuri = "ws://localhost:8080/socketServer?username=" + window.sessionStorage.username + "&docName=" + this.docName + ".txt" + "&docOwner=" + this.docOwner;
+        this.websock = new WebSocket(wsuri);
+        this.websock.onmessage = this.websocketonmessage;
+        this.websock.onopen = this.websocketonopen;
+        this.websock.onerror = this.websocketonerror;
+        this.websock.onclose = this.websocketclose;
+    },
+    websocketonopen(){ //连接建立之后执行send方法发送数据
+        //this.websocketsend("success");
+    },
+    websocketonerror(){//连接建立失败重连
+        this.initWebSocket();
+    },
+    websocketonmessage(e){ //数据接收
+        var data = JSON.parse(e.data)
+        console.log(data.content)
+        this.changeData(data.content)
+        this.$refs.myQuillEditor.quill.setSelection(pos)
+    },
+    websocketsend(Data){//数据发送
+        this.websock.send(Data);
+    },
+    websocketclose(e){  //关闭
+        console.log('断开连接',e);
     },
     mounted() {
         (document.getElementById('loading')).style.display = "none"
@@ -91,8 +104,8 @@ export default {
             url:'/edit',
             method:"post",
             data:{
-                newPath: this.$store.state.doc.newPath,
-                oldPath: this.$store.state.doc.oldPath
+                oldPath: this.$store.state.doc.oldPath,
+                newPath: this.$store.state.doc.newPath
             },
             transformRequest: [function (data) {
             // Do whatever you want to transform the data
@@ -112,12 +125,24 @@ export default {
         .then(response => {
             //this.content = response.data.content
             this.$refs.myQuillEditor.quill.insertText(0,response.data.content)
+            this.docName = response.data.docName.replace('.txt','')
+            this.docID = response.data.docID
+            this.docOwner = response.data.docOwner
+            var userString = ''
+            for(var i = 0; i < response.data.docSharer.length; i++)
+            {
+                userString = userString + response.data.docSharer[i] + ' '
+            }
+            if(userString === '')
+            {
+                this.userString = '无'
+            } else
+            {
+                this.userString = userString
+            }
             this.$refs.myQuillEditor.quill.enable(false)
-            this.timer = setInterval(this.timeUpdate,5000)
+            this.initWebSocket()
         });
-    },
-    beforeDestroy() {
-        clearInterval(this.timer)
     }
 }
 </script>
