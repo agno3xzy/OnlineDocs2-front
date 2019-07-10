@@ -40,7 +40,7 @@
 
 <script>
 import '../assets/myicon/iconfont.css'
-import { convertTimeFormat } from '../../static/js/converTime'
+import { convertTimeFormat } from '../../static/js/convertTime'
 export default {
     inject: ['reload'],
     name: 'nav-menu',

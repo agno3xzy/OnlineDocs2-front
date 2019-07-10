@@ -463,6 +463,30 @@ export default {
             console.log('断开连接',e);
         },
     },
+    created() {
+        var that = this
+        var flag = true
+        document.addEventListener('keydown',function(e){
+        // ctrl + s
+        var key = window.event.keyCode ? window.event.keyCode : window.event.which
+        if( e.ctrlKey && key === 83 ){
+            if(flag)
+            {
+                that.saveFile()
+                flag = false
+            }
+            e.preventDefault()
+        }
+        });
+        document.addEventListener('keyup',function(e){
+            // ctrl + s
+            var key = window.event.keyCode ? window.event.keyCode : window.event.which
+            if( e.ctrlKey && key === 83 ){
+                flag = true
+                e.preventDefault()
+            }
+        });
+    },
     mounted() {
         (document.getElementById('loading')).style.display = "none"
         //与后端通讯 获取文件内容

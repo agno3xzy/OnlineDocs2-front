@@ -87,6 +87,30 @@ export default {
             })
         },
     },
+    created() {
+        var that = this
+        var flag = true
+        document.addEventListener('keydown',function(e){
+        // enter
+        var key = window.event.keyCode ? window.event.keyCode : window.event.which
+        if( key === 13 ){
+            if(flag)
+            {
+                that.submitForm()
+                flag = false
+            }
+            e.preventDefault()
+        }
+        });
+        document.addEventListener('keyup',function(e){
+        // enter
+        var key = window.event.keyCode ? window.event.keyCode : window.event.which
+        if( key === 13 ){
+            flag = true
+            e.preventDefault()
+        }
+        });
+    },
     components: {backgroundimg}
 }
 </script>

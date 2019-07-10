@@ -125,7 +125,7 @@
 <script>
 var docList = []
 import navmenu from './nav-menu'
-import { convertTimeFormat } from '../../static/js/converTime'
+import { convertTimeFormat } from '../../static/js/convertTime'
 export default {
     inject: ['reload'],
     name: 'document-manage',
