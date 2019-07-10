@@ -8,7 +8,6 @@ import ElementUI from 'element-ui'
 import VueQuillEditor from 'vue-quill-editor'
 import VueClipboard from 'vue-clipboard2';
 import store from './store'
-
 // require styles
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'

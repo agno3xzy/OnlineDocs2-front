@@ -96,7 +96,7 @@
             </el-table>
         </div>
         <div id="button-group">
-            <el-button type="primary" @click="uploadDialogVisible = true">上传<i class="el-icon-upload el-icon--right"></i></el-button>
+            <el-button type="primary" @click="showUploadDialog">上传<i class="el-icon-upload el-icon--right"></i></el-button>
         </div>
         <el-dialog title="上传文件" :visible.sync="uploadDialogVisible">
             <el-upload
@@ -178,6 +178,14 @@ export default {
         });
     },
     methods: {
+        showUploadDialog() {
+            for(var i = this.fileList.length-1; i >= 0; i--)
+            {
+                this.$delete(this.fileList,i)
+            }
+            this.progress = 0
+            this.uploadDialogVisible = true
+        },
         changeCategory() {
             var selectitem = event.target.id
             for(var i in this.category) {

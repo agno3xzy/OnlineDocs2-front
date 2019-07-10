@@ -146,7 +146,36 @@ export default {
                     })
                 }
             });
-        }
+        },
+        handleKeyDown(e) {
+            var that = this
+            var key = window.event.keyCode ? window.event.keyCode : window.event.which
+            if( key === 13 ){
+                if(flag)
+                {
+                    that.submitForm()
+                    flag = false
+                }
+                e.preventDefault()
+            }
+        },
+        handleKeyUp(e) {
+            var that = this
+            // enter
+            var key = window.event.keyCode ? window.event.keyCode : window.event.which
+            if( key === 13 ){
+                flag = true
+                e.preventDefault()
+            }
+        },
+        created() {
+            document.addEventListener('keydown', this.handleKeyDown)
+            document.addEventListener('keyup', this.handleKeyUp)
+        },
+        destroyed() {
+            document.removeEventListener('keydown', this.handleKeyDown)
+            document.removeEventListener('keyup', this.handleKeyUp)
+        },
     },
     components: { backgroundimg }
     

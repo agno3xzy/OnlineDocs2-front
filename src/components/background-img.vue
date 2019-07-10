@@ -1,5 +1,5 @@
 <template>
-    <img class="background-img" src='../../static/image/login.png' @load="showPage"> 
+    <img class="background-img" src='https://s2.ax1x.com/2019/07/10/ZcG4qU.png' @load="showPage"> 
 </template>
 
 <script>
