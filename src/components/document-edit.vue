@@ -71,6 +71,7 @@ import { update,CurentTime,replaceAll } from '../../static/js/DiffToStringArray'
 import { setTimeout, clearTimeout, setInterval, clearInterval } from 'timers';
 var content, new_content
 var pos //设置光标位置
+var flag = true
 export default {
     name: 'document-edit',
     data() {
@@ -462,30 +463,29 @@ export default {
         websocketclose(e){  //关闭
             console.log('断开连接',e);
         },
-    },
-    created() {
-        var that = this
-        var flag = true
-        document.addEventListener('keydown',function(e){
-        // ctrl + s
-        var key = window.event.keyCode ? window.event.keyCode : window.event.which
-        if( e.ctrlKey && key === 83 ){
-            if(flag)
-            {
-                that.saveFile()
-                flag = false
-            }
-            e.preventDefault()
-        }
-        });
-        document.addEventListener('keyup',function(e){
+        handleKeyDown() {
             // ctrl + s
             var key = window.event.keyCode ? window.event.keyCode : window.event.which
-            if( e.ctrlKey && key === 83 ){
-                flag = true
-                e.preventDefault()
+            if( window.event.ctrlKey && key === 83 ){
+                if(flag)
+                {
+                    this.saveFile()
+                    flag = false
+                }
+                window.event.preventDefault()
             }
-        });
+        },
+        handleKeyUp() {
+            var key = window.event.keyCode ? window.event.keyCode : window.event.which
+            if( window.event.ctrlKey && key === 83 ){
+                flag = true
+                window.event.preventDefault()
+            }
+        }
+    },
+    created() {
+        document.addEventListener('keydown', this.handleKeyDown);
+        document.addEventListener('keyup',this.handleKeyUp);
     },
     mounted() {
         (document.getElementById('loading')).style.display = "none"
@@ -543,6 +543,8 @@ export default {
     },
     destroyed() {
         this.websock.close()
+        document.removeEventListener('keydown', this.handleKeyDown)
+        document.removeEventListener('keyup', this.handleKeyUp)
     },
 }
 </script>
