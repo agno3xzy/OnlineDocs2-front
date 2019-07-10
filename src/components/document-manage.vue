@@ -307,18 +307,6 @@ export default {
                 });
             }
         },
-        searchIndex(docName) {
-            var docIndex = -1
-            for(var i = 0; i < docList.length; i++)
-            {
-                if(docName === docList[i].docName)
-                {
-                    docIndex = i
-                    break;
-                }
-            }
-            return docIndex
-        },
         handleExplore(index, row) {
             console.log(index, row)
             console.log(docList)
@@ -369,7 +357,6 @@ export default {
                         type: 'success',
                         duration: 2000
                     })
-                    docList.splice(docIndex,1)
                     this.reload()
                 } else if(response.data.message === 'fail')
                 {
